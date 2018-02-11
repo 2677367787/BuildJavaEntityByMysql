@@ -1,0 +1,10 @@
+D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\bin\Debug\AutoBuildSql.exe.config
+D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\bin\Debug\AutoBuildSql.exe
+D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\bin\Debug\AutoBuildSql.pdb
+D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.csprojResolveAssemblyReference.cache
+D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.Form1.resources
+D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.Properties.Resources.resources
+D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.csproj.GenerateResource.Cache
+D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.exe
+D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.pdb
+D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.FrmBuildEntity.resources
