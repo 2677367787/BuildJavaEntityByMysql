@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace AutoBuildSql
@@ -49,7 +46,6 @@ namespace AutoBuildSql
 
         private void cboDataBase_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string where = "1 = 1";
             if (cboDataBase.SelectedValue != null)
             {
                 DataView dv = _tableSource.DefaultView;
@@ -137,7 +133,21 @@ namespace AutoBuildSql
 
         private void btnBuild_Click(object sender, EventArgs e)
         {
+            txtResult.Text = Generate.GenerateSql(_dictInfo, txtEntityName.Text,"");
+        }
 
+        private void txtResult_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\x1')
+            {
+                ((TextBox)sender).SelectAll();
+                e.Handled = true;
+            }
+        }
+
+        private void btnExportEntity_Click(object sender, EventArgs e)
+        {
+            txtResult.Text = Generate.GenerateSql(_dictInfo, txtEntityName.Text,"Export");
         }
     }
 }

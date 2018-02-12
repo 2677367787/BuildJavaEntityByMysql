@@ -11,9 +11,9 @@ using System.Windows.Forms;
 
 namespace AutoBuildSql
 {
-    public partial class Form1 : Form
+    public partial class FrmMain : Form
     {
-        public Form1()
+        public FrmMain()
         {
             InitializeComponent();
         }
@@ -27,11 +27,14 @@ namespace AutoBuildSql
             string conditon = sqlText.Substring(whereIndex+7);
             IList<string> list = new List<string>();
 
-            //tableAndRelation = RemoveKeyWord(tableAndRelation);
+            tableAndRelation = RemoveKeyWord(tableAndRelation);
         }
 
-        private string RemoveKeyWord(string str, IList<string> list)
+        private string RemoveKeyWord(string strSql)
         {
+            IList<string> list = new List<string>();
+            IList<string> list2 = new List<string>();
+            list.Add(strSql);
             string[] keyWrods =
             {
                 "left outer join",
@@ -42,11 +45,19 @@ namespace AutoBuildSql
                 "right join",
                 " join "
             };
-            foreach (var keyWrod in keyWrods)
+
+            foreach (string t in keyWrods)
             {
-                string[] strs = keyWrod.Split(new[]{keyWrod}, StringSplitOptions.None);
-            }
-            return keyWrods.Aggregate(str, (current, keyWord) => current.Replace(keyWord, " "));
+                foreach (string sqls in list)
+                {
+                    string[] sql = sqls.Split(new[] { t }, StringSplitOptions.None);
+                    foreach (string s in sql)
+                    {
+                        list2.Add(s);
+                    }
+                }
+            } 
+            return "";
         }
 
         private void button1_Click(object sender, EventArgs e)

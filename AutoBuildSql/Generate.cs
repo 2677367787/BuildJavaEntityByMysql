@@ -7,65 +7,104 @@
 ** 创建日期：2018/2/11 23:09:47
 ** 修改记录： 
 *****************************************************/
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace AutoBuildSql
 {
     public class Generate
     {　
-
-        public string GenerateSql(Dictionary<string,ColumnInfo> fields)
+        public static string GenerateSql(Dictionary<string,ColumnInfo> fields,string entityName,string type)
         {
-            Dictionary<string, string> dictTypeMapping = new Dictionary<string, string>();
-            dictTypeMapping.Add("varchar", "String");
-            dictTypeMapping.Add("char", "String");
-            dictTypeMapping.Add("blob", "byte[]");
-            dictTypeMapping.Add("text", "String");
-            dictTypeMapping.Add("integer", "Long");
-            dictTypeMapping.Add("tinyint", "Integer");
-            dictTypeMapping.Add("smallint", "Integer");
-            dictTypeMapping.Add("mediumint", "Integer");
-            dictTypeMapping.Add("bit", "Boolean");
-            dictTypeMapping.Add("bigint", "BigInteger");
-            dictTypeMapping.Add("float", "Float");
-            dictTypeMapping.Add("double", "Double");
-            dictTypeMapping.Add("decimal", "BigDecimal");
-            dictTypeMapping.Add("boolean", "Integer");
-            dictTypeMapping.Add("id", "Long");
-            dictTypeMapping.Add("date", "Date");
-            dictTypeMapping.Add("time", "Time");
-            dictTypeMapping.Add("datetime", "Timestamp");
-            dictTypeMapping.Add("timestamp", "Timestamp");
-            dictTypeMapping.Add("year", "Date");
+            Dictionary<string, string> dictTypeMapping = new Dictionary<string, string>
+            {
+                {"varchar", "String"},
+                {"char", "String"},
+                {"blob", "byte[]"},
+                {"text", "String"},
+                {"integer", "Long"},
+                {"tinyint", "Integer"},
+                {"smallint", "Integer"},
+                {"mediumint", "Integer"},
+                {"bit", "Boolean"},
+                {"bigint", "BigInteger"},
+                {"float", "Float"},
+                {"double", "Double"},
+                {"decimal", "BigDecimal"},
+                {"boolean", "Integer"},
+                {"id", "Long"},
+                {"date", "Date"},
+                {"time", "Time"},
+                {"datetime", "Timestamp"},
+                {"timestamp", "Timestamp"},
+                {"year", "Date"},
+                {"int", "Integer"}
+            };
             StringBuilder entity = new StringBuilder();
             entity.Append("");
             string wrap = "\r\n";
+            string tabs = "\t";
+
+            entity.Append($"package xxxx;{wrap}");
+            entity.Append($"import java.io.Serializable;{wrap}");
+            entity.Append($"public class {entityName} implements Serializable {wrap}{{");
+
+            int i = 1;
             foreach (var field in fields)
             {
-                entity.Append($"/*{wrap}");
-                entity.Append($" *{wrap}");
-                entity.Append($" */{wrap}");
-                entity.AppendFormat($"private {dictTypeMapping[field.Value.DataType]} {field.Value.Name};{wrap}");
+                string dataType = dictTypeMapping[field.Value.DataType];
+                string fieldName = GetField(field.Value.Name);
+                string comment = field.Value.Comment;
+                entity.Append($"{tabs}/*{wrap}");
+                entity.Append($"{tabs} *{comment}{wrap}");
+                entity.Append($"{tabs} */{wrap}");
 
-                entity.Append(getSetMethodName(field.Value.Name));
+                if (type == "Export")
+                {
+                    entity.AppendFormat($"{tabs}@Excel(name='{comment}',orderNum=\"{i}\",isImportField='{fieldName}'){wrap}");
+                }
+                entity.AppendFormat($"{tabs}private {dataType} {fieldName};{wrap}");
+                
+                entity.Append($"{tabs}public void {GetSetMethodName(fieldName)}({dataType} {fieldName}){{{wrap}" );
+                entity.Append($"{tabs}{tabs}this.{fieldName}={fieldName};{wrap}");
+                entity.Append($"{tabs}}}{wrap}");
 
+                entity.Append($"{tabs}public {dataType} {GetGetMethodName(fieldName)}(){{{wrap}");
+                entity.Append($"{tabs}{tabs}return {fieldName};{wrap}");
+                entity.Append($"{tabs}}}{wrap}");
+                i++;
             }
-            return "";
+            entity.Append("}");
+            return entity.ToString();
         }
 
-        private string getSetMethodName(string field)
+        private static string GetSetMethodName(string field)
+        {
+            return "set" + GetMethodName(field); 
+        }
+
+        private static string GetGetMethodName(string field)
+        {
+            return "get" + GetMethodName(field);
+        }
+
+        private static string GetMethodName(string field)
         {
             string fieldName = string.Empty;
             string[] str = field.Split('_');
-            for (int i = 0; i < str.Length; i++)
+            return str.Aggregate(fieldName, (current, t) => current + (t.Substring(0, 1).ToUpper() + t.Substring(1)));
+        }
+
+        private static string GetField(string field)
+        {
+            string fieldName = string.Empty;
+            string[] str = field.Split('_');
+            for (int i = 1; i < str.Length; i++)
             {
                 fieldName += str[i].Substring(0, 1).ToUpper() + str[i].Substring(1);
             }
-            return "set" + fieldName;
+            return str[0]+fieldName;
         }
     }
 }

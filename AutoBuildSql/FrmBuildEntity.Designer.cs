@@ -34,6 +34,12 @@
             this.txtField = new System.Windows.Forms.TextBox();
             this.checkedListBox = new System.Windows.Forms.CheckedListBox();
             this.dg1 = new System.Windows.Forms.DataGridView();
+            this.TableSchema = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.TableName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.ColumnComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label3 = new System.Windows.Forms.Label();
             this.cboTableName = new System.Windows.Forms.ComboBox();
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -42,15 +48,12 @@
             this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TableSchema = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TableName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.ColumnComment = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnConfirmSel = new System.Windows.Forms.Button();
             this.btnBuild = new System.Windows.Forms.Button();
             this.txtResult = new System.Windows.Forms.TextBox();
+            this.btnExportEntity = new System.Windows.Forms.Button();
+            this.txtEntityName = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dg1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -58,7 +61,7 @@
             // 
             this.cboDataBase.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboDataBase.FormattingEnabled = true;
-            this.cboDataBase.Location = new System.Drawing.Point(107, 12);
+            this.cboDataBase.Location = new System.Drawing.Point(107, 11);
             this.cboDataBase.Name = "cboDataBase";
             this.cboDataBase.Size = new System.Drawing.Size(211, 20);
             this.cboDataBase.TabIndex = 0;
@@ -84,9 +87,9 @@
             // 
             // txtField
             // 
-            this.txtField.Location = new System.Drawing.Point(107, 38);
+            this.txtField.Location = new System.Drawing.Point(107, 40);
             this.txtField.Name = "txtField";
-            this.txtField.Size = new System.Drawing.Size(489, 21);
+            this.txtField.Size = new System.Drawing.Size(422, 21);
             this.txtField.TabIndex = 3;
             this.txtField.TextChanged += new System.EventHandler(this.txtFiled_TextChanged);
             // 
@@ -95,7 +98,7 @@
             this.checkedListBox.FormattingEnabled = true;
             this.checkedListBox.Location = new System.Drawing.Point(602, 65);
             this.checkedListBox.Name = "checkedListBox";
-            this.checkedListBox.Size = new System.Drawing.Size(156, 292);
+            this.checkedListBox.Size = new System.Drawing.Size(198, 292);
             this.checkedListBox.TabIndex = 5;
             this.checkedListBox.DoubleClick += new System.EventHandler(this.checkedListBox_DoubleClick);
             // 
@@ -119,6 +122,43 @@
             this.dg1.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dg1_CellDoubleClick);
             this.dg1.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dg1_RowPostPaint);
             // 
+            // TableSchema
+            // 
+            this.TableSchema.DataPropertyName = "Table_Schema";
+            this.TableSchema.HeaderText = "数据库";
+            this.TableSchema.Name = "TableSchema";
+            // 
+            // TableName
+            // 
+            this.TableName.DataPropertyName = "Table_Name";
+            this.TableName.HeaderText = "表名";
+            this.TableName.Name = "TableName";
+            // 
+            // ColumnName
+            // 
+            this.ColumnName.DataPropertyName = "Column_Name";
+            this.ColumnName.HeaderText = "列名";
+            this.ColumnName.Name = "ColumnName";
+            // 
+            // ColumnType
+            // 
+            this.ColumnType.DataPropertyName = "Column_Type";
+            this.ColumnType.HeaderText = "数据类型";
+            this.ColumnType.Name = "ColumnType";
+            // 
+            // ColumnComment
+            // 
+            this.ColumnComment.DataPropertyName = "Column_Comment";
+            this.ColumnComment.HeaderText = "注释";
+            this.ColumnComment.Name = "ColumnComment";
+            // 
+            // dataType
+            // 
+            this.dataType.DataPropertyName = "data_type";
+            this.dataType.HeaderText = "data_type";
+            this.dataType.Name = "dataType";
+            this.dataType.Visible = false;
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -132,7 +172,7 @@
             // 
             this.cboTableName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboTableName.FormattingEnabled = true;
-            this.cboTableName.Location = new System.Drawing.Point(385, 12);
+            this.cboTableName.Location = new System.Drawing.Point(385, 11);
             this.cboTableName.Name = "cboTableName";
             this.cboTableName.Size = new System.Drawing.Size(211, 20);
             this.cboTableName.TabIndex = 7;
@@ -175,48 +215,11 @@
             this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
             this.dataGridViewTextBoxColumn6.Visible = false;
             // 
-            // TableSchema
-            // 
-            this.TableSchema.DataPropertyName = "Table_Schema";
-            this.TableSchema.HeaderText = "数据库";
-            this.TableSchema.Name = "TableSchema";
-            // 
-            // TableName
-            // 
-            this.TableName.DataPropertyName = "Table_Name";
-            this.TableName.HeaderText = "表名";
-            this.TableName.Name = "TableName";
-            // 
-            // ColumnName
-            // 
-            this.ColumnName.DataPropertyName = "Column_Name";
-            this.ColumnName.HeaderText = "列名";
-            this.ColumnName.Name = "ColumnName";
-            // 
-            // ColumnType
-            // 
-            this.ColumnType.DataPropertyName = "Column_Type";
-            this.ColumnType.HeaderText = "数据类型";
-            this.ColumnType.Name = "ColumnType";
-            // 
-            // ColumnComment
-            // 
-            this.ColumnComment.DataPropertyName = "Column_Comment";
-            this.ColumnComment.HeaderText = "注释";
-            this.ColumnComment.Name = "ColumnComment";
-            // 
-            // dataType
-            // 
-            this.dataType.DataPropertyName = "data_type";
-            this.dataType.HeaderText = "data_type";
-            this.dataType.Name = "dataType";
-            this.dataType.Visible = false;
-            // 
             // btnConfirmSel
             // 
-            this.btnConfirmSel.Location = new System.Drawing.Point(602, 37);
+            this.btnConfirmSel.Location = new System.Drawing.Point(535, 39);
             this.btnConfirmSel.Name = "btnConfirmSel";
-            this.btnConfirmSel.Size = new System.Drawing.Size(75, 23);
+            this.btnConfirmSel.Size = new System.Drawing.Size(61, 23);
             this.btnConfirmSel.TabIndex = 9;
             this.btnConfirmSel.Text = "确认选择";
             this.btnConfirmSel.UseVisualStyleBackColor = true;
@@ -224,9 +227,9 @@
             // 
             // btnBuild
             // 
-            this.btnBuild.Location = new System.Drawing.Point(683, 37);
+            this.btnBuild.Location = new System.Drawing.Point(673, 38);
             this.btnBuild.Name = "btnBuild";
-            this.btnBuild.Size = new System.Drawing.Size(75, 23);
+            this.btnBuild.Size = new System.Drawing.Size(57, 23);
             this.btnBuild.TabIndex = 10;
             this.btnBuild.Text = "生成";
             this.btnBuild.UseVisualStyleBackColor = true;
@@ -237,14 +240,45 @@
             this.txtResult.Location = new System.Drawing.Point(14, 373);
             this.txtResult.Multiline = true;
             this.txtResult.Name = "txtResult";
-            this.txtResult.Size = new System.Drawing.Size(744, 129);
+            this.txtResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtResult.Size = new System.Drawing.Size(786, 129);
             this.txtResult.TabIndex = 11;
+            this.txtResult.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtResult_KeyPress);
+            // 
+            // btnExportEntity
+            // 
+            this.btnExportEntity.Location = new System.Drawing.Point(736, 38);
+            this.btnExportEntity.Name = "btnExportEntity";
+            this.btnExportEntity.Size = new System.Drawing.Size(64, 23);
+            this.btnExportEntity.TabIndex = 12;
+            this.btnExportEntity.Text = "生成导出";
+            this.btnExportEntity.UseVisualStyleBackColor = true;
+            this.btnExportEntity.Click += new System.EventHandler(this.btnExportEntity_Click);
+            // 
+            // txtEntityName
+            // 
+            this.txtEntityName.Location = new System.Drawing.Point(673, 11);
+            this.txtEntityName.Name = "txtEntityName";
+            this.txtEntityName.Size = new System.Drawing.Size(127, 21);
+            this.txtEntityName.TabIndex = 13;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(602, 15);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(65, 12);
+            this.label4.TabIndex = 14;
+            this.label4.Text = "实体类名称";
             // 
             // FrmBuildEntity
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(769, 514);
+            this.ClientSize = new System.Drawing.Size(806, 514);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.txtEntityName);
+            this.Controls.Add(this.btnExportEntity);
             this.Controls.Add(this.txtResult);
             this.Controls.Add(this.btnBuild);
             this.Controls.Add(this.btnConfirmSel);
@@ -290,5 +324,8 @@
         private System.Windows.Forms.Button btnConfirmSel;
         private System.Windows.Forms.Button btnBuild;
         private System.Windows.Forms.TextBox txtResult;
+        private System.Windows.Forms.Button btnExportEntity;
+        private System.Windows.Forms.TextBox txtEntityName;
+        private System.Windows.Forms.Label label4;
     }
 }

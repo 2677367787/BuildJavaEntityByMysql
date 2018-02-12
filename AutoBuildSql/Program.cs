@@ -16,7 +16,7 @@ namespace AutoBuildSql
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmBuildEntity());
+            Application.Run(new FrmMain());
         }
     }
 }

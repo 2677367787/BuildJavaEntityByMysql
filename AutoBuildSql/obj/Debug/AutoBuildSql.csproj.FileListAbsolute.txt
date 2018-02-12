@@ -8,3 +8,13 @@ D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.cspr
 D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.exe
 D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.pdb
 D:\My Computer App\Desktop\AutoBuildSql\AutoBuildSql\obj\Debug\AutoBuildSql.FrmBuildEntity.resources
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\bin\Debug\AutoBuildSql.exe.config
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.exe
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.pdb
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\bin\Debug\AutoBuildSql.exe
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\bin\Debug\AutoBuildSql.pdb
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.csprojResolveAssemblyReference.cache
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.FrmBuildEntity.resources
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.Properties.Resources.resources
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.csproj.GenerateResource.Cache
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.FrmMain.resources

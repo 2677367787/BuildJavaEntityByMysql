@@ -1,6 +1,6 @@
 ﻿namespace AutoBuildSql
 {
-    partial class Form1
+    partial class FrmMain
     {
         /// <summary>
         /// 必需的设计器变量。
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmMain));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.tsmBuildData = new System.Windows.Forms.ToolStripMenuItem();
             this.生产实体对象ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
