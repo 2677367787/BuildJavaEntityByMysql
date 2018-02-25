@@ -24,22 +24,22 @@ namespace AutoBuildSql
 
         }
 
-        public static void BuildSqlText(DataTable dt, DataRow[] drs)
+        public static void BuildSqlText(DataTable dt,DataTable dtColumnInfo)
         {
             StringBuilder sqlText = new StringBuilder();
-            sqlText.Append($"Insert into {dt.TableName}(");
+            sqlText.AppendFormat("Insert into {0}(", dt.TableName);
             foreach (var column in dt.Columns)
             {
-                sqlText.Append($"{column},");
+                sqlText.AppendFormat("{0},", column);
             }
             sqlText.Append(") ");
 
-            for (int j = 0; j < drs.Length; j++)
+            for (int j = 0; j < dt.Rows.Count; j++)
             {
                 sqlText.Append("values(");
-                for (int i = 0; i < dt.Rows.Count; i++)
+                for (int i = 0; i < dt.Columns.Count; i++)
                 {
-                    sqlText.Append($"{dt.Rows[j][i]},");
+                    sqlText.AppendFormat("'{0}',", dt.Rows[j][i]);
                 }
                 sqlText.Remove(sqlText.Length - 1, 1);
                 sqlText.Append("),");

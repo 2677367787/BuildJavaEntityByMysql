@@ -32,6 +32,13 @@ namespace AutoBuildSql
             return MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
         }
 
+        public static DataTable GetColumnByTableName(string tableName)
+        {
+            string sqlText = "SELECT f.`TABLE_SCHEMA`,f.data_type,f.`TABLE_NAME`,f.`COLUMN_NAME`,f.`COLUMN_TYPE`,f.`COLUMN_COMMENT` FROM INFORMATION_SCHEMA.Columns f " +
+                             " where table_schema NOT IN('information_schema','mysql','performance_schema','test') and table_schema='" + tableName + "'";
+            return MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
+        }
+
         /// <summary>
         /// 使用正则表达式截取{}中的值
         /// </summary>
