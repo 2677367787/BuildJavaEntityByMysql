@@ -24,7 +24,13 @@ namespace AutoBuildSql
 
         }
 
-        public static void BuildSqlText(DataTable dt,DataTable dtColumnInfo)
+        /// <summary>
+        /// 生成insert语句
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="dtColumnInfo"></param>
+        /// <returns></returns>
+        public static string BuildInsertSqlText(DataTable dt,DataTable dtColumnInfo)
         {
             StringBuilder sqlText = new StringBuilder();
             sqlText.AppendFormat("Insert into {0}(", dt.TableName);
@@ -45,6 +51,31 @@ namespace AutoBuildSql
                 sqlText.Append("),");
             }
             sqlText.Remove(sqlText.Length - 1, 1);
+            return sqlText.ToString();
+        }
+
+        public static string BuildValidateSqlText(DataTable dt, DataTable dtColumnInfo)
+        {
+            StringBuilder sqlText = new StringBuilder();
+            sqlText.AppendFormat("select count(1) from {0} where ", dt.TableName);
+            foreach (var column in dt.Columns)
+            {
+                sqlText.AppendFormat("{0},", column);
+            }
+            sqlText.Append(" ");
+
+            for (int j = 0; j < dt.Rows.Count; j++)
+            {
+                sqlText.Append("values(");
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    sqlText.AppendFormat("'{0}',", dt.Rows[j][i]);
+                }
+                sqlText.Remove(sqlText.Length - 1, 1);
+                sqlText.Append("),");
+            }
+            sqlText.Remove(sqlText.Length - 1, 1);
+            return sqlText.ToString();
         }
     }
 }

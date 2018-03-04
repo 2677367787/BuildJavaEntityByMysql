@@ -26,17 +26,33 @@ namespace AutoBuildSql
             int formIndex = sqlText.IndexOf(" from ", StringComparison.Ordinal);
             int whereIndex = sqlText.IndexOf(" where ", StringComparison.Ordinal);
             string tableAndRelation = sqlText.Substring(formIndex+6, whereIndex- formIndex);
-            string conditon = sqlText.Substring(whereIndex+7);
-            IList<string> list = new List<string>();
+            string conditon = sqlText.Substring(whereIndex+7); 
 
             string excutSql = sqlText.Substring(formIndex);
 
-             RemoveKeyWord(tableAndRelation, excutSql);
+            IList<string> list = RemoveKeyWord(tableAndRelation, excutSql);
 
-            
+            foreach (var tables in list)
+            {
+                var tableNames = tables.Trim().Split(' ');
+                string tableAbbName = tableNames[0];
+                string tableFullName = tableNames[0];
+                if (tableNames.Length > 1)
+                {
+                    tableAbbName = tableNames[1];
+                }
+
+                string sql = string.Format("select {0}.* {1}", tableAbbName, excutSql);
+                DataTable dt = MySqlHelper.GetDataSetBySqlText(sql).Tables[0];
+                dt.TableName = tableFullName;
+
+
+                DataTable dtColmnInfo = DataHelper.GetColumnByTableName(tableFullName);
+                textBox1.Text += SqlHelper.BuildInsertSqlText(dt, dtColmnInfo) + "\r\n";
+            }
         }
 
-        private void RemoveKeyWord(string strSql,string excutSql)
+        private IList<string> RemoveKeyWord(string strSql,string excutSql)
         {
             IList<string> list = new List<string>();
             list.Add(strSql);
@@ -57,24 +73,8 @@ namespace AutoBuildSql
                 var list2 = GetStrList(keyWrod, list);
                 list.Clear();
                 list = list2;
-            }
-
-            foreach (var tables in list)
-            {
-                var tableNames = tables.Trim().Split(' ');
-                string tableAbbName = tableNames[0];
-                string tableFullName = tableNames[0];
-                if (tableNames.Length > 1)
-                {
-                    tableAbbName = tableNames[1];
-                }
-
-                string sql = string.Format("select {0}.* {1}", tableAbbName, excutSql);
-                DataTable dt = MySqlHelper.GetDataSetBySqlText(sql).Tables[0];
-                dt.TableName = tableFullName;
-                DataTable dtColmnInfo = DataHelper.GetColumnByTableName(tableFullName);
-                SqlHelper.BuildSqlText(dt, dtColmnInfo); 
-            }
+            } 
+            return list;
         }
 
         private IList<string> GetStrList(string keyWrod, IList<string> list)
@@ -101,6 +101,23 @@ namespace AutoBuildSql
         private void button1_Click(object sender, EventArgs e)
         {
              
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MySqlHelper.Conn = comboBox1.Text;
+        }
+
+        private void FrmMain_Load(object sender, EventArgs e)
+        {
+            cboDataBase.ValueMember = "database";
+            cboDataBase.DisplayMember = "database";
+            cboDataBase.DataSource = DataHelper.GetDataBases();
+        }
+
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
