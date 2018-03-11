@@ -24,24 +24,10 @@ namespace AutoBuildSql
         private Dictionary<string, ColumnInfo> _dictInfo = new Dictionary<string, ColumnInfo>();
         private void FrmBuildEntity_Load(object sender, EventArgs e)
         { 
-//            DataGridViewCheckBoxColumn chkCbo = new DataGridViewCheckBoxColumn();
-//            DatagridViewCheckBoxHeaderCell cbHeader = new DatagridViewCheckBoxHeaderCell();
-//            chkCbo.HeaderCell = cbHeader;
-//            chkCbo.Width = 40;
-//            dg1.Columns.Insert(0,chkCbo);
-//            cbHeader.OnCheckBoxClicked += cbHeader_OnCheckBoxClicked;
             _dt = DataHelper.GetAllColumn();
             dg1.DataSource = _dt;
             _tableSource = _dt.Copy();
-            cboDataBase.ValueMember = "database";
-            cboDataBase.DisplayMember = "database";
-            cboDataBase.DataSource = DataHelper.GetDataBases();
-        }
-
-        private void cbHeader_OnCheckBoxClicked(bool state)
-        {
-            dg1.EndEdit();
-            dg1.Rows.OfType<DataGridViewRow>().ToList().ForEach(t => t.Cells[0].Value = state);
+            cboConnName.DataSource = MySqlHelper.ConnectionAttr;
         }
 
         private void cboDataBase_SelectedIndexChanged(object sender, EventArgs e)
@@ -49,7 +35,7 @@ namespace AutoBuildSql
             if (cboDataBase.SelectedValue != null)
             {
                 DataView dv = _tableSource.DefaultView;
-                dv.RowFilter = $" TABLE_SCHEMA='{cboDataBase.SelectedValue}'";
+                dv.RowFilter = string.Format(" TABLE_SCHEMA='{0}'",cboDataBase.SelectedValue);
                 DataTable dataTableDistinct = dv.ToTable(true, "TABLE_NAME");
 
                 cboTableName.ValueMember = "TABLE_NAME";
@@ -61,14 +47,14 @@ namespace AutoBuildSql
         private void FilterData(string fieldText)
         {
             DataView dv = _dt.DefaultView;
-            dv.RowFilter = $" COLUMN_NAME='{fieldText}' or COLUMN_COMMENT like '%{fieldText}%'";
+            dv.RowFilter = string.Format(" COLUMN_NAME='{0}' or COLUMN_COMMENT like '%{1}%'", fieldText, fieldText);
             dg1.DataSource = dv;
         }
 
         private void FilterData(string tableSchema,string tableName)
         {
             DataView dv = _dt.DefaultView;
-            dv.RowFilter = $" table_schema='{tableSchema}' and table_name = '{tableName}'";
+            dv.RowFilter = string.Format(" table_schema='{0}' and table_name = '{1}'", tableSchema, tableName);
             dg1.DataSource = dv;
         }
 
@@ -148,6 +134,12 @@ namespace AutoBuildSql
         private void btnExportEntity_Click(object sender, EventArgs e)
         {
             txtResult.Text = Generate.GenerateSql(_dictInfo, txtEntityName.Text,"Export");
+        }
+
+        private void cboConnName_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            MySqlHelper.Conn = cboConnName.SelectedValue.ToString();
+            cboDataBase.DataSource = DataHelper.GetDataBases();
         }
     }
 }

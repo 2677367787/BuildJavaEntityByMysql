@@ -37,9 +37,9 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cboDataBase = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtResult = new System.Windows.Forms.TextBox();
             this.btnUpdate = new System.Windows.Forms.Button();
+            this.cboConnName = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,7 +69,7 @@
             // 
             // btnResolve
             // 
-            this.btnResolve.Location = new System.Drawing.Point(576, 292);
+            this.btnResolve.Location = new System.Drawing.Point(576, 264);
             this.btnResolve.Name = "btnResolve";
             this.btnResolve.Size = new System.Drawing.Size(75, 23);
             this.btnResolve.TabIndex = 1;
@@ -79,17 +79,17 @@
             // 
             // txtSqlText
             // 
-            this.txtSqlText.Location = new System.Drawing.Point(12, 89);
+            this.txtSqlText.Location = new System.Drawing.Point(16, 67);
             this.txtSqlText.Multiline = true;
             this.txtSqlText.Name = "txtSqlText";
-            this.txtSqlText.Size = new System.Drawing.Size(749, 197);
+            this.txtSqlText.Size = new System.Drawing.Size(745, 186);
             this.txtSqlText.TabIndex = 2;
             this.txtSqlText.Text = resources.GetString("txtSqlText.Text");
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(74, 66);
+            this.label1.Location = new System.Drawing.Point(412, 38);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(41, 12);
             this.label1.TabIndex = 4;
@@ -97,47 +97,35 @@
             // 
             // cboDataBase
             // 
+            this.cboDataBase.DisplayMember = "database";
             this.cboDataBase.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboDataBase.FormattingEnabled = true;
-            this.cboDataBase.Location = new System.Drawing.Point(121, 63);
+            this.cboDataBase.Location = new System.Drawing.Point(459, 35);
             this.cboDataBase.Name = "cboDataBase";
-            this.cboDataBase.Size = new System.Drawing.Size(640, 20);
+            this.cboDataBase.Size = new System.Drawing.Size(302, 20);
             this.cboDataBase.TabIndex = 3;
+            this.cboDataBase.ValueMember = "database";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(14, 38);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(101, 12);
+            this.label2.Size = new System.Drawing.Size(77, 12);
             this.label2.TabIndex = 5;
-            this.label2.Text = "数据库链接字符串";
+            this.label2.Text = "数据库链接名";
             // 
-            // comboBox1
+            // txtResult
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "Database=\'szdpyou\';Data Source=\'localhost\';User Id=\'root\';Password=\'root\';charset" +
-                "=\'utf8\';pooling=true"});
-            this.comboBox1.Location = new System.Drawing.Point(121, 35);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(640, 20);
-            this.comboBox1.TabIndex = 6;
-            this.comboBox1.Text = "Database=\'szdpyou\';Data Source=\'localhost\';User Id=\'root\';Password=\'root\';charset" +
-    "=\'utf8\';pooling=true";
-            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(12, 321);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(749, 197);
-            this.textBox1.TabIndex = 7;
+            this.txtResult.Location = new System.Drawing.Point(12, 293);
+            this.txtResult.Multiline = true;
+            this.txtResult.Name = "txtResult";
+            this.txtResult.Size = new System.Drawing.Size(749, 197);
+            this.txtResult.TabIndex = 7;
             // 
             // btnUpdate
             // 
-            this.btnUpdate.Location = new System.Drawing.Point(686, 292);
+            this.btnUpdate.Location = new System.Drawing.Point(686, 264);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(75, 23);
             this.btnUpdate.TabIndex = 8;
@@ -145,14 +133,26 @@
             this.btnUpdate.UseVisualStyleBackColor = true;
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
+            // cboConnName
+            // 
+            this.cboConnName.DisplayMember = "Name";
+            this.cboConnName.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboConnName.FormattingEnabled = true;
+            this.cboConnName.Location = new System.Drawing.Point(97, 35);
+            this.cboConnName.Name = "cboConnName";
+            this.cboConnName.Size = new System.Drawing.Size(221, 20);
+            this.cboConnName.TabIndex = 9;
+            this.cboConnName.ValueMember = "ConnectionStr";
+            this.cboConnName.SelectedIndexChanged += new System.EventHandler(this.cboConnName_SelectedIndexChanged);
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(773, 596);
+            this.ClientSize = new System.Drawing.Size(773, 513);
+            this.Controls.Add(this.cboConnName);
             this.Controls.Add(this.btnUpdate);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.txtResult);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cboDataBase);
@@ -180,9 +180,9 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox cboDataBase;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.ComboBox comboBox1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtResult;
         private System.Windows.Forms.Button btnUpdate;
+        private System.Windows.Forms.ComboBox cboConnName;
     }
 }
 

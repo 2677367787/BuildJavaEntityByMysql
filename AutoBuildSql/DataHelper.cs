@@ -39,6 +39,21 @@ namespace AutoBuildSql
             return MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
         }
 
+        public static IList<string> GetKey(string tbName,string databaseName)
+        {
+            string sqlText = "SELECT t.TABLE_NAME, t.CONSTRAINT_TYPE, c.COLUMN_NAME, c.ORDINAL_POSITION FROM " +
+                             "INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS t, INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS c " +
+                             "WHERE t.TABLE_NAME = c.TABLE_NAME AND t.CONSTRAINT_TYPE = 'PRIMARY KEY' AND" +
+                             " t.CONSTRAINT_SCHEMA = '" + databaseName + "' AND t.TABLE_NAME = '" + tbName + "'";
+            DataTable dt = MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
+            IList<string> listKey = new List<string>();
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                listKey.Add(dt.Rows[i]["COLUMN_NAME"].ToString());
+            }
+            return listKey;
+        }
+
         /// <summary>
         /// 使用正则表达式截取{}中的值
         /// </summary>

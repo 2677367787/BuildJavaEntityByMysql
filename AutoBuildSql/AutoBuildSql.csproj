@@ -51,8 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppConfig.cs" />
     <Compile Include="ColumnInfo.cs" />
-    <Compile Include="DatagridViewCheckBoxHeaderCell.cs" />
     <Compile Include="DataHelper.cs" />
     <Compile Include="FrmMain.cs">
       <SubType>Form</SubType>
@@ -66,16 +66,35 @@
     <Compile Include="FrmBuildEntity.Designer.cs">
       <DependentUpon>FrmBuildEntity.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmSetting.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmSetting.Designer.cs">
+      <DependentUpon>FrmSetting.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmSynData.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmSynData.Designer.cs">
+      <DependentUpon>FrmSynData.cs</DependentUpon>
+    </Compile>
     <Compile Include="Generate.cs" />
     <Compile Include="MySqlHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SqlHelper.cs" />
+    <Compile Include="SqlTextHelper.cs" />
+    <Compile Include="XmlHelper.cs" />
     <EmbeddedResource Include="FrmMain.resx">
       <DependentUpon>FrmMain.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FrmBuildEntity.resx">
       <DependentUpon>FrmBuildEntity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmSetting.resx">
+      <DependentUpon>FrmSetting.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmSynData.resx">
+      <DependentUpon>FrmSynData.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

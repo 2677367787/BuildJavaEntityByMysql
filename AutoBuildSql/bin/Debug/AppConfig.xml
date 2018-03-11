@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfAppConfig xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<AppConfig>
+		<ConnectionAttrs>
+			<Name>测试库</Name>
+			<ConnectionStr>Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true</ConnectionStr>
+		</ConnectionAttrs>
+		<ConnectionAttrs>
+			<Name>开发库</Name>
+			<ConnectionStr>Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true</ConnectionStr>
+		</ConnectionAttrs>
+		<ConnectionAttrs>
+			<Name>开发库</Name>
+			<ConnectionStr>Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true</ConnectionStr>
+		</ConnectionAttrs>
+		<FilterDatabases>
+			<Name>information_schema</Name>
+		</FilterDatabases>
+		<FilterDatabases>
+			<Name>mysql</Name>
+		</FilterDatabases>
+		<FilterDatabases>
+			<Name>performance_schema</Name>
+		</FilterDatabases>
+		<FilterDatabases>
+			<Name>test</Name>
+		</FilterDatabases>
+	</AppConfig>
+</ArrayOfAppConfig>

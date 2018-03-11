@@ -10,7 +10,9 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using MySql.Data.MySqlClient;
 
 namespace AutoBuildSql
@@ -18,10 +20,78 @@ namespace AutoBuildSql
     /// <summary>
     ///MYSQLHelper 的摘要说明
     /// </summary>
-    public abstract class MySqlHelper
+    public class MySqlHelper
     {
+        public static List<ConnectionAttr> ConnectionAttr;
+        public static List<Filter> FilterDatabases;
         //数据库连接字符串
-        public static string Conn = "Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true";
+        public static string Conn { get; set; }
+
+        static MySqlHelper()
+        {
+            IList<AppConfig> listAppConfig;
+            if (File.Exists("AppConfig.xml"))
+            {
+                listAppConfig = XmlHelper.ReadConfig<AppConfig>("AppConfig.xml");
+            }
+            else
+            {
+                #region 初始化配置文件
+                ConnectionAttr ca = new ConnectionAttr
+                {
+                    ConnectionStr =
+                                "Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true",
+                    Name = "测试库"
+                };
+                ConnectionAttr ca1 = new ConnectionAttr
+                {
+                    ConnectionStr =
+                        "Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true",
+                    Name = "开发库"
+                };
+                ConnectionAttr ca2 = new ConnectionAttr
+                {
+                    ConnectionStr =
+                        "Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true",
+                    Name = "开发库"
+                };
+                List<ConnectionAttr> listConn = new List<ConnectionAttr> { ca, ca1, ca2 };
+
+
+                Filter f = new Filter
+                {
+                    Name = "information_schema"
+                };
+
+                Filter f1 = new Filter
+                {
+                    Name = "mysql"
+                };
+                Filter f2 = new Filter
+                {
+                    Name = "performance_schema"
+                };
+                Filter f3 = new Filter
+                {
+                    Name = "test"
+                };
+                List<Filter> listDataBase = new List<Filter> { f, f1, f2, f3 };
+
+
+                listAppConfig = new List<AppConfig>();
+                AppConfig ac = new AppConfig
+                {
+                    ConnectionAttrs = listConn,
+                    FilterDatabases = listDataBase
+                };
+                listAppConfig.Add(ac);
+                XmlHelper.SaveConfig(listAppConfig, "AppConfig.xml"); 
+                #endregion
+            }
+            ConnectionAttr = listAppConfig[0].ConnectionAttrs;
+            Conn = listAppConfig[0].ConnectionAttrs[0].ConnectionStr;
+            FilterDatabases = listAppConfig[0].FilterDatabases;
+        }
 
         // 用于缓存参数的HASH表
         private static Hashtable parmCache = Hashtable.Synchronized(new Hashtable());
@@ -169,7 +239,11 @@ namespace AutoBuildSql
         {
             return GetDataSet(Conn, CommandType.Text, sqlStr, null);
         }
-         
+
+        public static DataSet GetDataSetBySqlText(string sqlStr,string conn)
+        {
+            return GetDataSet(Conn, CommandType.Text, sqlStr, null);
+        }
 
         /// <summary>
         /// 用指定的数据库连接字符串执行一个命令并返回一个数据集的第一列
