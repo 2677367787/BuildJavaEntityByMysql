@@ -1,32 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace AutoBuildSql
 {
-    public partial class FrmMain : Form
+    public partial class FrmMain : DockContent
     {
         public FrmMain()
         {
             InitializeComponent();
-        }
-
-        private void tsmBuildData_Click(object sender, EventArgs e)
-        {
-            txtResult.Text = SqlTextHelper.Analysis(txtSqlText.Text, cboDataBase.SelectedValue.ToString());
-        } 
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-             
         }
 
         private void FrmMain_Load(object sender, EventArgs e)
@@ -34,15 +18,38 @@ namespace AutoBuildSql
             cboConnName.DataSource = MySqlHelper.ConnectionAttr;
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
-        {
-            
-        }
-
         private void cboConnName_SelectedIndexChanged(object sender, EventArgs e)
         {
             MySqlHelper.Conn = cboConnName.SelectedValue.ToString();
             cboDataBase.DataSource = DataHelper.GetDataBases();
+        }
+
+        private void btnResolve_Click(object sender, EventArgs e)
+        {
+            Dictionary<string, IList<string>> sqlList = SqlTextHelper.Analysis(txtSqlText.Text,
+                cboDataBase.SelectedValue.ToString());
+
+            if (chkAdd.Checked)
+            {
+                txtResult.Text = string.Join("\r\n", sqlList["add"].ToArray());
+            }
+            if (chkDel.Checked)
+            {
+                txtResult.Text += string.Join("\r\n", sqlList["del"].ToArray());
+            }
+            if (chkUpd.Checked)
+            {
+                txtResult.Text += string.Join("\r\n", sqlList["upd"].ToArray());
+            }
+        }
+
+        private void txtSqlText_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == '\x1')
+            {
+                ((TextBox)sender).SelectAll();
+                e.Handled = true;
+            }
         }
     }
 }

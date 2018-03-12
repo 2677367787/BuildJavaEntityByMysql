@@ -20,3 +20,6 @@ D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.csp
 D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.exe
 D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.pdb
 D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.csprojResolveAssemblyReference.cache
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.FrmMenu.resources
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\bin\Debug\MySql.Data.dll
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\bin\Debug\WeifenLuo.WinFormsUI.Docking.dll

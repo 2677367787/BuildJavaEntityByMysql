@@ -17,9 +17,18 @@ namespace AutoBuildSql
 {
     public class SqlTextHelper
     {
-        public static string Analysis(string originalSqlText,string dataBaseName)
+        public static Dictionary<string, IList<string>> Analysis(string originalSqlText,string dataBaseName)
         {
-            StringBuilder logs = new StringBuilder();
+            LocalData.logs.Clear();
+
+            Dictionary<string, IList<string>> dictSqlText = new Dictionary<string, IList<string>>();
+            IList<string> listAdd = new List<string>();
+            IList<string> listDel = new List<string>();
+            IList<string> listUpd = new List<string>();
+            dictSqlText.Add("add", listAdd);
+            dictSqlText.Add("del", listDel);
+            dictSqlText.Add("upd", listUpd);
+
             try
             {
                 string sqlText = originalSqlText.Replace("\r\n", " ").ToLower();
@@ -38,7 +47,7 @@ namespace AutoBuildSql
                     var tableNames = tables.Trim().Split(' ');
                     string tableAbbName = tableNames[0];
                     string tableName = string.Format("`{0}`.`{1}`", dataBaseName, tableAbbName);
-                    logs.AppendLine("解析后表名：" + tableName);
+                    LocalData.logs.AppendLine("解析后表名：" + tableName);
                     excutSql = excutSql.Replace(tableAbbName, tableName);
                 }
 
@@ -55,24 +64,30 @@ namespace AutoBuildSql
                     }
 
                     string sql = string.Format("select DISTINCT {0}.* {1}", tableAbbName, excutSql);
-                    logs.AppendLine("执行SQL：" + sql);
+                    LocalData.logs.AppendLine("执行SQL：" + sql);
                     DataTable dt = MySqlHelper.GetDataSetBySqlText(sql).Tables[0];
                     dt.TableName = tableName;
                      
                     DataTable dtColmnInfo = DataHelper.GetColumnByTableName(tableFullName);
+
                     string insertSqlText = BuildInsertSqlText(dt, dtColmnInfo);
-                    logs.AppendLine("生成插入语句："+ insertSqlText);
+                    listAdd.Add(insertSqlText);
+                    LocalData.logs.AppendLine("生成插入语句："+ insertSqlText);
+
                     string updateSqlText = BuildUpdateSqlText(dt, dataBaseName);
-                    logs.AppendLine("生成更新语句：" + updateSqlText);
+                    listUpd.Add(updateSqlText);
+                    LocalData.logs.AppendLine("生成更新语句：" + updateSqlText);
+
                     string deleteSqlText = BuildDeleteSqlText(dt, dataBaseName);
-                    logs.AppendLine("生成删除语句：" + deleteSqlText);
+                    listDel.Add(deleteSqlText);
+                    LocalData.logs.AppendLine("生成删除语句：" + deleteSqlText);
                 }
             }
             catch (Exception ex)
-            { 
-                logs.Append("出现异常："+ex.Message);
+            {
+                LocalData.logs.Append("出现异常："+ex.Message);
             }
-            return logs.ToString();
+            return dictSqlText;
         }
 
         private static IList<string> RemoveKeyWord(string strSql, string excutSql)
@@ -130,7 +145,7 @@ namespace AutoBuildSql
         public static string BuildInsertSqlText(DataTable dt,DataTable dtColumnInfo)
         {
             StringBuilder sqlText = new StringBuilder();
-            sqlText.AppendFormat("Insert into {0}(", dt.TableName);
+            sqlText.AppendFormat("INSERT INTO {0}(", dt.TableName);
             foreach (var column in dt.Columns)
             {
                 sqlText.AppendFormat("`{0}`,", column);
@@ -140,7 +155,7 @@ namespace AutoBuildSql
 
             for (int j = 0; j < dt.Rows.Count; j++)
             {
-                sqlText.Append("values(");
+                sqlText.Append("VALUES(");
                 for (int i = 0; i < dt.Columns.Count; i++)
                 {
                     string value = "null";
@@ -154,6 +169,7 @@ namespace AutoBuildSql
                 sqlText.Append("),");
             }
             sqlText.Remove(sqlText.Length - 1, 1);
+            sqlText.Append(";");
             return sqlText.ToString();
         }
 
@@ -200,7 +216,7 @@ namespace AutoBuildSql
                     sqlText.AppendFormat(" and {0}='{1}'", key, row[key]);
                 }
             }
-            
+            sqlText.Append(";");
             return sqlText.ToString();
         }
 
@@ -228,7 +244,7 @@ namespace AutoBuildSql
                     }
                 }
             }
-
+            sqlText.Append(";");
             return sqlText.ToString();
         }
     }

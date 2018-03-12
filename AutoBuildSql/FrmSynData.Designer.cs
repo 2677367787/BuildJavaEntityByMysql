@@ -28,32 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.cboConnSource = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.btnSynData = new System.Windows.Forms.Button();
+            this.txtSqlText = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cboDbSource = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.cboDbTarger = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.comboBox4 = new System.Windows.Forms.ComboBox();
+            this.cboConnTarger = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtResult = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
-            // comboBox1
+            // cboConnSource
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(89, 26);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(141, 20);
-            this.comboBox1.TabIndex = 18;
+            this.cboConnSource.DisplayMember = "Name";
+            this.cboConnSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboConnSource.FormattingEnabled = true;
+            this.cboConnSource.Location = new System.Drawing.Point(89, 26);
+            this.cboConnSource.Name = "cboConnSource";
+            this.cboConnSource.Size = new System.Drawing.Size(141, 20);
+            this.cboConnSource.TabIndex = 18;
+            this.cboConnSource.ValueMember = "ConnectionStr";
+            this.cboConnSource.SelectedIndexChanged += new System.EventHandler(this.cboConnSource_SelectedIndexChanged);
             // 
             // label5
             // 
@@ -64,15 +67,6 @@
             this.label5.TabIndex = 17;
             this.label5.Text = "链接串名称";
             // 
-            // comboBox3
-            // 
-            this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox3.FormattingEnabled = true;
-            this.comboBox3.Location = new System.Drawing.Point(89, 52);
-            this.comboBox3.Name = "comboBox3";
-            this.comboBox3.Size = new System.Drawing.Size(141, 20);
-            this.comboBox3.TabIndex = 22;
-            // 
             // label2
             // 
             this.label2.AutoSize = true;
@@ -82,28 +76,29 @@
             this.label2.TabIndex = 21;
             this.label2.Text = "数据库名称";
             // 
-            // button1
+            // btnSynData
             // 
-            this.button1.Location = new System.Drawing.Point(478, 106);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 25;
-            this.button1.Text = "同步";
-            this.button1.UseVisualStyleBackColor = true;
+            this.btnSynData.Location = new System.Drawing.Point(478, 106);
+            this.btnSynData.Name = "btnSynData";
+            this.btnSynData.Size = new System.Drawing.Size(75, 23);
+            this.btnSynData.TabIndex = 25;
+            this.btnSynData.Text = "同步";
+            this.btnSynData.UseVisualStyleBackColor = true;
+            this.btnSynData.Click += new System.EventHandler(this.btnSynData_Click);
             // 
-            // textBox1
+            // txtSqlText
             // 
-            this.textBox1.Location = new System.Drawing.Point(12, 135);
-            this.textBox1.Multiline = true;
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(541, 249);
-            this.textBox1.TabIndex = 26;
+            this.txtSqlText.Location = new System.Drawing.Point(12, 135);
+            this.txtSqlText.Multiline = true;
+            this.txtSqlText.Name = "txtSqlText";
+            this.txtSqlText.Size = new System.Drawing.Size(541, 249);
+            this.txtSqlText.TabIndex = 26;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.comboBox3);
+            this.groupBox1.Controls.Add(this.cboDbSource);
             this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.comboBox1);
+            this.groupBox1.Controls.Add(this.cboConnSource);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Location = new System.Drawing.Point(12, 10);
             this.groupBox1.Name = "groupBox1";
@@ -112,11 +107,22 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "源";
             // 
+            // cboDbSource
+            // 
+            this.cboDbSource.DisplayMember = "database";
+            this.cboDbSource.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboDbSource.FormattingEnabled = true;
+            this.cboDbSource.Location = new System.Drawing.Point(89, 52);
+            this.cboDbSource.Name = "cboDbSource";
+            this.cboDbSource.Size = new System.Drawing.Size(141, 20);
+            this.cboDbSource.TabIndex = 22;
+            this.cboDbSource.ValueMember = "database";
+            // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.comboBox2);
+            this.groupBox2.Controls.Add(this.cboDbTarger);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Controls.Add(this.comboBox4);
+            this.groupBox2.Controls.Add(this.cboConnTarger);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Location = new System.Drawing.Point(296, 10);
             this.groupBox2.Name = "groupBox2";
@@ -125,14 +131,16 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "目标";
             // 
-            // comboBox2
+            // cboDbTarger
             // 
-            this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox2.FormattingEnabled = true;
-            this.comboBox2.Location = new System.Drawing.Point(89, 52);
-            this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(141, 20);
-            this.comboBox2.TabIndex = 22;
+            this.cboDbTarger.DisplayMember = "database";
+            this.cboDbTarger.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboDbTarger.FormattingEnabled = true;
+            this.cboDbTarger.Location = new System.Drawing.Point(89, 52);
+            this.cboDbTarger.Name = "cboDbTarger";
+            this.cboDbTarger.Size = new System.Drawing.Size(141, 20);
+            this.cboDbTarger.TabIndex = 23;
+            this.cboDbTarger.ValueMember = "database";
             // 
             // label1
             // 
@@ -143,14 +151,17 @@
             this.label1.TabIndex = 17;
             this.label1.Text = "链接串名称";
             // 
-            // comboBox4
+            // cboConnTarger
             // 
-            this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox4.FormattingEnabled = true;
-            this.comboBox4.Location = new System.Drawing.Point(89, 26);
-            this.comboBox4.Name = "comboBox4";
-            this.comboBox4.Size = new System.Drawing.Size(141, 20);
-            this.comboBox4.TabIndex = 18;
+            this.cboConnTarger.DisplayMember = "Name";
+            this.cboConnTarger.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboConnTarger.FormattingEnabled = true;
+            this.cboConnTarger.Location = new System.Drawing.Point(89, 26);
+            this.cboConnTarger.Name = "cboConnTarger";
+            this.cboConnTarger.Size = new System.Drawing.Size(141, 20);
+            this.cboConnTarger.TabIndex = 18;
+            this.cboConnTarger.ValueMember = "ConnectionStr";
+            this.cboConnTarger.SelectedIndexChanged += new System.EventHandler(this.cboConnTarger_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -161,13 +172,13 @@
             this.label3.TabIndex = 21;
             this.label3.Text = "数据库名称";
             // 
-            // textBox2
+            // txtResult
             // 
-            this.textBox2.Location = new System.Drawing.Point(12, 390);
-            this.textBox2.Multiline = true;
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(541, 141);
-            this.textBox2.TabIndex = 29;
+            this.txtResult.Location = new System.Drawing.Point(12, 390);
+            this.txtResult.Multiline = true;
+            this.txtResult.Name = "txtResult";
+            this.txtResult.Size = new System.Drawing.Size(541, 141);
+            this.txtResult.TabIndex = 29;
             // 
             // label4
             // 
@@ -184,13 +195,15 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(565, 545);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.txtResult);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.txtSqlText);
+            this.Controls.Add(this.btnSynData);
             this.Controls.Add(this.groupBox1);
+            this.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Name = "FrmSynData";
-            this.Text = "FrmSynData";
+            this.Text = "数据同步";
+            this.Load += new System.EventHandler(this.FrmSynData_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -202,19 +215,19 @@
 
         #endregion
 
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox cboConnSource;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.ComboBox comboBox3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button btnSynData;
+        private System.Windows.Forms.TextBox txtSqlText;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ComboBox comboBox4;
+        private System.Windows.Forms.ComboBox cboConnTarger;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtResult;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox cboDbSource;
+        private System.Windows.Forms.ComboBox cboDbTarger;
     }
 }

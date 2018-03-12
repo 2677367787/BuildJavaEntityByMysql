@@ -137,6 +137,11 @@ namespace AutoBuildSql
             return val;
         }
 
+        public static int ExecuteNonQuery(string sqlText)
+        {
+            return ExecuteNonQuery(Conn, CommandType.Text, sqlText, null);
+        }
+
         /// <summary>
         ///使用现有的SQL事务执行一个sql命令（不返回数据集）
         /// </summary>

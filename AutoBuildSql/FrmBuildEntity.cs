@@ -4,10 +4,11 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace AutoBuildSql
 {
-    public partial class FrmBuildEntity : Form
+    public partial class FrmBuildEntity : DockContent
     {
         public FrmBuildEntity()
         {
