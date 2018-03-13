@@ -37,14 +37,21 @@ namespace AutoBuildSql
 
         private void btnSynData_Click(object sender, EventArgs e)
         {
+            string sourceDb = cboDbSource.SelectedValue.ToString();
+            string targerDb = cboDbTarger.SelectedValue.ToString();
             Dictionary<string, IList<string>> sqlList = SqlTextHelper.Analysis(txtSqlText.Text,
                 cboDbSource.SelectedValue.ToString());
-            txtResult.Text += " Begin ";
-            txtResult.Text += string.Join("\r\n", sqlList["del"].ToArray());
-            txtResult.Text += string.Join("\r\n", sqlList["add"].ToArray());
-            txtResult.Text += " End; ";
-
-            MessageBox.Show(""+MySqlHelper.ExecuteNonQuery(txtResult.Text));
+            txtResult.Text += string.Join("\r\n", sqlList["del"].ToArray()).Replace(sourceDb, targerDb);
+            txtResult.Text += string.Join("\r\n", sqlList["add"].ToArray()).Replace(sourceDb, targerDb); ;
+            try
+            {
+                MessageBox.Show("" + MySqlHelper.ExecuteNonQuery(txtResult.Text));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
         }
     }
 }
