@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace AutoBuildSql
@@ -18,6 +19,12 @@ namespace AutoBuildSql
 
         private void txtSqlText_TextChanged(object sender, EventArgs e)
         {
+            string sqlText = txtSqlText.Text.Replace("\r\n", " ").ToLower();
+            sqlText = Regex.Replace(sqlText, "\\s{2,}", " ");
+            if (txtSqlText.Text.IndexOf("insert into", StringComparison.Ordinal) != -1)
+            {
+
+            }
             int top = 15;    //顶部起点像素位置
             int left = 15;   //左边起点像素位置 
 

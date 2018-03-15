@@ -16,6 +16,17 @@ namespace AutoBuildSql
 {
     public class LocalData
     {
-        public static StringBuilder logs = new StringBuilder();
+        public static StringBuilder Logs = new StringBuilder();
+    }
+
+    public class TableRelt
+    {
+        public string PtbName { get; set; }
+
+        public string PcolName { get; set; }
+
+        public string FtbName { get; set; }
+        public string FcolName { get; set; }
+
     }
 }
