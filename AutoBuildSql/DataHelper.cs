@@ -32,6 +32,11 @@ namespace AutoBuildSql
             return MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
         }
 
+        /// <summary>
+        /// 查询表每列属性
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <returns></returns>
         public static DataTable GetColumnByTableName(string tableName)
         {
             string sqlText = "SELECT f.`TABLE_SCHEMA`,f.data_type,f.`TABLE_NAME`,f.`COLUMN_NAME`,f.`COLUMN_TYPE`,f.`COLUMN_COMMENT` FROM INFORMATION_SCHEMA.Columns f " +
@@ -41,11 +46,13 @@ namespace AutoBuildSql
 
         public static IList<string> GetKey(string tbName,string databaseName)
         {
-            string sqlText = "SELECT t.TABLE_NAME, t.CONSTRAINT_TYPE, c.COLUMN_NAME, c.ORDINAL_POSITION FROM " +
-                             "INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS t, INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS c " +
-                             "WHERE t.TABLE_NAME = c.TABLE_NAME AND t.CONSTRAINT_TYPE IN  ('UNIQUE','PRIMARY KEY') AND" +
-                             " t.CONSTRAINT_SCHEMA = '" + databaseName + "' AND t.TABLE_NAME = '" + tbName + "'" +
-                             " AND c.`TABLE_SCHEMA` = '" + databaseName + "' ";
+            //            string sqlText = "SELECT t.TABLE_NAME, t.CONSTRAINT_TYPE, c.COLUMN_NAME, c.ORDINAL_POSITION FROM " +
+            //                             "INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS t, INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS c " +
+            //                             "WHERE t.TABLE_NAME = c.TABLE_NAME AND t.CONSTRAINT_TYPE IN  ('UNIQUE','PRIMARY KEY') AND" +
+            //                             " t.CONSTRAINT_SCHEMA = '" + databaseName + "' AND t.TABLE_NAME = '" + tbName + "'" +
+            //                             " AND c.`TABLE_SCHEMA` = '" + databaseName + "' ";
+            string sqlText = "SELECT DISTINCT T.`COLUMN_NAME` FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE T " +
+                "WHERE T.`CONSTRAINT_SCHEMA` = '"+ databaseName + "' AND T.`TABLE_NAME` = '"+ tbName + "'";
             DataTable dt = MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
             IList<string> listKey = new List<string>();
             for (int i = 0; i < dt.Rows.Count; i++)
@@ -53,6 +60,16 @@ namespace AutoBuildSql
                 listKey.Add(dt.Rows[i]["COLUMN_NAME"].ToString());
             }
             return listKey;
+        }
+
+        public static string GetIntKey(string tbName, string colName)
+        {
+            string sqlText = " SELECT t.rownum FROM(SELECT @rownum:=@rownum+1 AS rownum , a.`"+ colName + "`" +
+                             " FROM(SELECT @rownum:= 0)t, "+ tbName + " a ORDER BY a."+ colName + ")t WHERE t.rownum != t.`" + colName + "`";
+            DataTable dt = MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
+            if (dt.Rows.Count == 0)
+                return "2147483647";
+            return dt.Rows[0][0].ToString();
         }
 
         /// <summary>

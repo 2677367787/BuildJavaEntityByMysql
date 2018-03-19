@@ -39,6 +39,7 @@
             this.chkAdd = new System.Windows.Forms.CheckBox();
             this.chkDel = new System.Windows.Forms.CheckBox();
             this.chkUpd = new System.Windows.Forms.CheckBox();
+            this.txtLog = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnResolve
@@ -145,11 +146,22 @@
             this.chkUpd.Text = "更新语句";
             this.chkUpd.UseVisualStyleBackColor = true;
             // 
+            // txtLog
+            // 
+            this.txtLog.Location = new System.Drawing.Point(12, 496);
+            this.txtLog.Multiline = true;
+            this.txtLog.Name = "txtLog";
+            this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.txtLog.Size = new System.Drawing.Size(749, 158);
+            this.txtLog.TabIndex = 13;
+            this.txtLog.WordWrap = false;
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(773, 513);
+            this.ClientSize = new System.Drawing.Size(773, 661);
+            this.Controls.Add(this.txtLog);
             this.Controls.Add(this.chkUpd);
             this.Controls.Add(this.chkDel);
             this.Controls.Add(this.chkAdd);
@@ -160,6 +172,7 @@
             this.Controls.Add(this.cboDataBase);
             this.Controls.Add(this.txtSqlText);
             this.Controls.Add(this.btnResolve);
+            this.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.Name = "FrmMain";
             this.Text = "生成SQL";
             this.Load += new System.EventHandler(this.FrmMain_Load);
@@ -179,6 +192,7 @@
         private System.Windows.Forms.CheckBox chkAdd;
         private System.Windows.Forms.CheckBox chkDel;
         private System.Windows.Forms.CheckBox chkUpd;
+        private System.Windows.Forms.TextBox txtLog;
     }
 }
 

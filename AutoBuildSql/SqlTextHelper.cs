@@ -11,19 +11,29 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.Xml.Xsl;
 
 namespace AutoBuildSql
 {
     public class SqlTextHelper
     {
+        /// <summary>
+        /// 表别名和表的对应关系
+        /// </summary>
         private static readonly Dictionary<string, string> DictTbNameRelt = new Dictionary<string, string>();
+
+        /// <summary>
+        /// 主表和关联表字段关联关系
+        /// </summary>
         private static readonly IList<TableRelt> ListTableRelt = new List<TableRelt>();
         public static Dictionary<string, IList<string>> Analysis(string originalSqlText,string dataBaseName)
         {
             DictTbNameRelt.Clear();
+            ListTableRelt.Clear();
             LocalData.Logs.Clear();
 
             Dictionary<string, IList<string>> dictSqlText = new Dictionary<string, IList<string>>();
@@ -36,18 +46,19 @@ namespace AutoBuildSql
 
             try
             {
-                string sqlText = originalSqlText.Replace("\r\n", " ").ToLower();
+                string sqlText = originalSqlText.Replace("\r\n", " ").Replace("`","").ToLower();
                 sqlText = Regex.Replace(sqlText, "\\s{2,}", " ");
                 int formIndex = sqlText.IndexOf(" from ", StringComparison.Ordinal);
                 int whereIndex = sqlText.IndexOf(" where ", StringComparison.Ordinal);
                 string tableAndRelation = sqlText.Substring(formIndex + 6, whereIndex - formIndex);
-                string conditonsStr = sqlText.Substring(whereIndex + 7);
+                string conditonsStr = sqlText.Substring(whereIndex + 7); 
 
                 //要执行查询的SQL语句
                 string excutSql = sqlText.Substring(formIndex);
 
+                IList<string> condList = new List<string>();
                 //去除关键字
-                IList<string> list = RemoveKeyWord(tableAndRelation, excutSql);
+                IList<string> list = RemoveKeyWord(tableAndRelation, excutSql, condList);
                 
                 foreach (var tables in list)
                 {
@@ -56,11 +67,21 @@ namespace AutoBuildSql
                     {
                         DictTbNameRelt.Add(tableNames[1], tableNames[0]);
                     }
+                    else
+                    {
+                        DictTbNameRelt.Add(tableNames[0], tableNames[0]);
+                    }
                     string tableAbbName = tableNames[0];
                     string tableName = string.Format("`{0}`.`{1}`", dataBaseName, tableAbbName);
                     LocalData.Logs.AppendLine("解析后表名：" + tableName);
-                    excutSql = excutSql.Replace(tableAbbName, tableName);
+                    //excutSql = excutSql.Replace(tableAbbName, tableName);
                 }
+                foreach (var con in condList)
+                {
+                    ResolveCond(con);
+                }
+                ResolveCond(conditonsStr);
+
                 DataSet ds = new DataSet();
                 foreach (var tables in list)
                 {
@@ -79,38 +100,115 @@ namespace AutoBuildSql
                     LocalData.Logs.AppendLine("执行SQL：" + sql);
                     DataTable dt = MySqlHelper.GetDataSetBySqlText(sql).Tables[0];
                     dt.TableName = tableName;
-                    ds.Tables.Add(dt);
-                    DataTable dtColmnInfo = DataHelper.GetColumnByTableName(tableFullName);
-
-                    string insertSqlText = BuildInsertSqlText(dt, dtColmnInfo, tableSchemaName);
-                    listAdd.Add(insertSqlText);
-                    LocalData.Logs.AppendLine("生成插入语句："+ insertSqlText);
-
-                    string updateSqlText = BuildUpdateSqlText(dt, dataBaseName, tableSchemaName);
-                    listUpd.Add(updateSqlText);
-                    LocalData.Logs.AppendLine("生成更新语句：" + updateSqlText);
-
-                    string deleteSqlText = BuildDeleteSqlText(dt, dataBaseName, tableSchemaName);
-                    listDel.Add(deleteSqlText);
-                    LocalData.Logs.AppendLine("生成删除语句：" + deleteSqlText);
+                    ds.Tables.Add(dt.Copy());
                 }
 
                 DataTable dtColumnInfo = DataHelper.GetAllColumn();
+                Dictionary<string, Dictionary<string, string>> tbAndKeyCol =
+                    new Dictionary<string, Dictionary<string, string>>();
                 //遍历所有表,查找每个表的主键,根据主键类型生成新主键，然后修改关联的外键表
-                foreach (DataTableCollection dt in ds.Tables)
+                foreach (DataTable dt in ds.Tables)
                 {
-                    string tbName = dt[0].TableName;
+                    int i = 0;
+                    string tbName = dt.TableName;
+                    Dictionary<string, string> keyCol = new Dictionary<string, string>();
                     IList<string> listKeys = DataHelper.GetKey(tbName, dataBaseName);
-                    foreach (var key in listKeys)
+                    tbAndKeyCol.Add(tbName, keyCol);
+                    foreach (DataRow dr in dt.Rows)
                     {
-                        DataRow[] drs = dtColumnInfo.Select(
-                            string.Format("TABLE_SCHEMA='{0}' AND COLUMN_NAME='{1}' and TABLE_NAME='{2}'", dataBaseName,
-                                key, tbName));
-                        foreach (var dr in drs)
+                        foreach (var key in listKeys)
                         {
+                            if (i == 0)
+                            {
+                                keyCol.Add(key, key);
+                            }
                             
+                            //查找所有主键
+                            DataRow[] colDr = dtColumnInfo.Select(
+                                string.Format("TABLE_SCHEMA='{0}' AND COLUMN_NAME='{1}' and TABLE_NAME='{2}'",
+                                    dataBaseName,
+                                    key, tbName));
+                            string dataType = colDr[0]["data_type"].ToString().ToLower();
+                            string colLength = colDr[0]["COLUMN_TYPE"].ToString().ToLower();
+                            string id="";
+                            switch (dataType)
+                            {
+                                case "int":
+                                    id = DataHelper.GetIntKey(tbName, key);
+                                    break;
+                                case "varchar":
+                                    string unCode = dr[key].ToString();
+                                    if (unCode.IndexOf("-", StringComparison.Ordinal) != -1 && unCode.Length >= 20)
+                                    {
+                                        id = Guid.NewGuid().ToString();
+                                        //unCode＝unCode;
+                                    }
+                                    else
+                                    {
+                                        int dataLength = int.Parse(DataHelper.GetRegexValue(colLength));
+                                        int valueLenght = unCode.Length;
+                                        if (valueLenght + 4 > dataLength)
+                                        {
+                                            id = "Test" +
+                                                     unCode.Substring(0, dataLength - (valueLenght + 4 - dataLength));
+                                        }
+                                        else
+                                        {
+                                            id = unCode;
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    id = "";
+                                    break;
+                            }
+
+                            dr[key] = id;
+
+                            //查找此ID作为外键的表条件在左
+                            List<TableRelt> ftbList= ListTableRelt.Where(t => t.FtbName == tbName && t.FcolName == key).ToList();
+                            //循环所有关联列赋值
+                            foreach (TableRelt ftb in ftbList)
+                            {
+                                foreach (DataRow fdr in ds.Tables[ftb.PtbName].Rows)
+                                {
+                                    fdr[ftb.PcolName] = id;
+                                }
+                                ListTableRelt.Remove(ftb);
+                            }
+
+                            //查找此ID作为外键的表条件在右
+                            List<TableRelt> ptbList = ListTableRelt.Where(t => t.PtbName == tbName && t.PcolName == key).ToList();
+                            //循环所有关联列赋值
+                            foreach (TableRelt ptb in ptbList)
+                            {
+                                foreach (DataRow fdr in ds.Tables[ptb.FtbName].Rows)
+                                {
+                                    fdr[ptb.FcolName] = id;
+                                }
+                                ListTableRelt.Remove(ptb);
+                            }
                         }
+                        i++;
                     }
+                }
+
+                foreach (DataTable dt in ds.Tables)
+                {
+                    string tbName = dt.TableName;
+                    DataTable dtColmnInfo = DataHelper.GetColumnByTableName(tbName);
+
+                    string insertSqlText = BuildInsertSqlText(dt, dtColmnInfo, tbName);
+                    listAdd.Add(insertSqlText);
+                    LocalData.Logs.AppendLine("生成插入语句：" + insertSqlText);
+
+                    string updateSqlText = BuildUpdateSqlText(dt, dataBaseName, tbName);
+                    listUpd.Add(updateSqlText);
+                    LocalData.Logs.AppendLine("生成更新语句：" + updateSqlText);
+
+                    string deleteSqlText = BuildDeleteSqlText(dt, dataBaseName, tbName);
+                    listDel.Add(deleteSqlText);
+                    LocalData.Logs.AppendLine("生成删除语句：" + deleteSqlText);
                 }
             }
             catch (Exception ex)
@@ -118,9 +216,9 @@ namespace AutoBuildSql
                 LocalData.Logs.Append("出现异常："+ex.Message);
             }
             return dictSqlText;
-        }
+        } 
 
-        private static IList<string> RemoveKeyWord(string strSql, string excutSql)
+        private static IList<string> RemoveKeyWord(string strSql, string excutSql, IList<string> condList)
         {
             IList<string> list = new List<string>();
             list.Add(strSql);
@@ -134,18 +232,18 @@ namespace AutoBuildSql
                 "right join",
                 " join ",
                 " on "
-            };
-
+            }; 
             foreach (string keyWrod in keyWrods)
             {
-                var list2 = GetStrList(keyWrod, list);
+                var list2 = GetStrList(keyWrod, list, condList);
                 list.Clear();
                 list = list2;
             }
+            
             return list;
         }
 
-        private static IList<string> GetStrList(string keyWrod, IList<string> list)
+        private static IList<string> GetStrList(string keyWrod, IList<string> list, IList<string> condList)
         {
             IList<string> list2 = new List<string>();
             foreach (string sqls in list)
@@ -154,7 +252,8 @@ namespace AutoBuildSql
                 if (keyWrod == " on ")
                 {
                     list2.Add(sql[0]);
-                    ResolveCond(sql[1]);
+                    if(sql.Length == 2)
+                        condList.Add(sql[1]);
                 }
                 else
                 {
@@ -167,22 +266,34 @@ namespace AutoBuildSql
             return list2;
         }
 
+        /// <summary>
+        /// 解析条件语句
+        /// </summary>
+        /// <param name="conditonsStr"></param>
         private static void ResolveCond(string conditonsStr)
         {
             string[] conditons = conditonsStr.Split(new[] { " and " }, StringSplitOptions.None);
             foreach (var conditon in conditons)
             {
-                string[] cond = conditon.Split('=');
-                if (Utils.IsNumeric(cond[0].Trim()) || Utils.IsNumeric(cond[1].Trim())) continue;
-                string[] tbcolumn = cond[0].Split('.');
-                string[] tbcolumn2 = cond[1].Split('.');
-                if (!DictTbNameRelt.ContainsKey(tbcolumn[0]) || !DictTbNameRelt.ContainsKey(tbcolumn2[0]))
+                string[] cond = conditon.Split(new[] { "=" }, StringSplitOptions.None);
+                string leftCond = cond[0].Trim();
+                string rightCond = cond[1].Trim();
+                //排除固定值 int类型
+                if (Utils.IsNumeric(leftCond) || Utils.IsNumeric(rightCond)) continue;
+                //排除固定值 单引号内容
+                if (leftCond.IndexOf('\'') != -1 && leftCond.IndexOf('\'') != leftCond.LastIndexOf('\'')) continue;
+                if (rightCond.IndexOf('\'') != -1 && rightCond.IndexOf('\'') != rightCond.LastIndexOf('\'')) continue;
+                string[] tbcolumn = leftCond.Split('.');
+                string[] tbcolumn2 = rightCond.Split('.');
+                if (DictTbNameRelt.ContainsKey(tbcolumn[0]) && DictTbNameRelt.ContainsKey(tbcolumn2[0]))
                 {
+                    string pTbName = DictTbNameRelt[tbcolumn[0]];
+                    string fTbName = DictTbNameRelt[tbcolumn2[0]];
                     TableRelt tr = new TableRelt
                     {
-                        PtbName = tbcolumn[0],
+                        PtbName = pTbName,
                         PcolName = tbcolumn[1],
-                        FtbName = tbcolumn2[0],
+                        FtbName = fTbName,
                         FcolName = tbcolumn2[1]
                     };
                     ListTableRelt.Add(tr);
@@ -199,6 +310,7 @@ namespace AutoBuildSql
         /// </summary>
         /// <param name="dt"></param>
         /// <param name="dtColumnInfo"></param>
+        /// <param name="tbName"></param>
         /// <returns></returns>
         public static string BuildInsertSqlText(DataTable dt,DataTable dtColumnInfo, string tbName)
         {

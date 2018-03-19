@@ -3,7 +3,7 @@
 	<AppConfig>
 		<ConnectionAttrs>
 			<Name>测试库</Name>
-			<ConnectionStr>Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true</ConnectionStr>
+			<ConnectionStr>Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true;Allow User Variables=True;</ConnectionStr>
 		</ConnectionAttrs>
 		<ConnectionAttrs>
 			<Name>开发库</Name>

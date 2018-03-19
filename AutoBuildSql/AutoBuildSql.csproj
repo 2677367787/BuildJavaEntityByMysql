@@ -57,6 +57,12 @@
     <Compile Include="AppConfig.cs" />
     <Compile Include="ColumnInfo.cs" />
     <Compile Include="DataHelper.cs" />
+    <Compile Include="FrmEditSql.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmEditSql.Designer.cs">
+      <DependentUpon>FrmEditSql.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,6 +101,9 @@
     <Compile Include="SqlTextHelper.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="XmlHelper.cs" />
+    <EmbeddedResource Include="FrmEditSql.resx">
+      <DependentUpon>FrmEditSql.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmMain.resx">
       <DependentUpon>FrmMain.cs</DependentUpon>
     </EmbeddedResource>

@@ -118,17 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="txtSqlText.Text" xml:space="preserve">
-    <value>SELECT
-  *
-FROM
-  test1
-  JOIN test2 t2
-    ON test1.head_id = t2.head_id
-  LEFT OUTER JOIN test3 t3
-    ON test1.item_id = t3.item_id
-  INNER JOIN test4 t4
-    ON t2.status = t4.code
-WHERE 1 = 1;
-</value>
+    <value>SELECT ph.* FROM po_head ph JOIN 
+po_detail pd ON pd.`po_head_id` = ph.`po_head_id`
+JOIN ba_item bi ON pd.`item_no` = bi.`item_no`
+JOIN ba_item_class bic JOIN
+code_info ci
+WHERE bic.`class_no` = bi.`class_no`
+AND ci.`type`='HEAD' AND ci.`code` = ph.`status`
+AND ph.`po_head_id` = 'c32f54b6-2a64-11e8-b43f-00ffa016f869'</value>
   </data>
 </root>

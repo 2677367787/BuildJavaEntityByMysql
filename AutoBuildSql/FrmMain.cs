@@ -41,6 +41,8 @@ namespace AutoBuildSql
             {
                 txtResult.Text += string.Join("\r\n", sqlList["upd"].ToArray());
             }
+
+            txtLog.Text = LocalData.Logs.ToString();
         }
 
         private void txtSqlText_KeyPress(object sender, KeyPressEventArgs e)
