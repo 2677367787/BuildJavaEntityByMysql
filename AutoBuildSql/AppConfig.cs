@@ -22,6 +22,8 @@ namespace AutoBuildSql
         public List<ConnectionAttr> ConnectionAttrs { get; set; }
         [XmlElement]
         public List<Filter> FilterDatabases { get; set; }
+        [XmlElement]
+        public List<Filter> FilterTables { get; set; }
     }
     [Serializable]
     public class ConnectionAttr

@@ -26,6 +26,7 @@ namespace AutoBuildSql
         public string PcolName { get; set; }
 
         public string FtbName { get; set; }
+
         public string FcolName { get; set; }
 
     }

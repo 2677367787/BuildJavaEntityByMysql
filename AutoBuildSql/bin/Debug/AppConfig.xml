@@ -25,5 +25,6 @@
 		<FilterDatabases>
 			<Name>test</Name>
 		</FilterDatabases>
+        <FilterTables><Name>code_info</Name></FilterTables>    
 	</AppConfig>
 </ArrayOfAppConfig>

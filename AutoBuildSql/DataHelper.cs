@@ -64,12 +64,15 @@ namespace AutoBuildSql
 
         public static string GetIntKey(string tbName, string colName)
         {
-            string sqlText = " SELECT t.rownum FROM(SELECT @rownum:=@rownum+1 AS rownum , a.`"+ colName + "`" +
-                             " FROM(SELECT @rownum:= 0)t, "+ tbName + " a ORDER BY a."+ colName + ")t WHERE t.rownum != t.`" + colName + "`";
-            DataTable dt = MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
-            if (dt.Rows.Count == 0)
-                return "2147483647";
-            return dt.Rows[0][0].ToString();
+            //            string sqlText = " SELECT t.rownum FROM(SELECT @rownum:=@rownum+1 AS rownum , a.`"+ colName + "`" +
+            //                             " FROM(SELECT @rownum:= 0)t, "+ tbName + " a ORDER BY a."+ colName + ")t WHERE t.rownum != t.`" + colName + "`";
+            //            DataTable dt = MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
+            //            if (dt.Rows.Count == 0)
+            //                return "2147483647";
+            byte[] buffer = Guid.NewGuid().ToByteArray();
+            int iSeed = BitConverter.ToInt32(buffer, 0);
+            Random random = new Random(iSeed);
+            return random.Next(1500000000, 2147483647).ToString();
         }
 
         /// <summary>

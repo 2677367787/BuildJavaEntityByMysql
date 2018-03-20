@@ -24,6 +24,7 @@ namespace AutoBuildSql
     {
         public static List<ConnectionAttr> ConnectionAttr;
         public static List<Filter> FilterDatabases;
+        public static List<Filter> FilterTables;
         //数据库连接字符串
         public static string Conn { get; set; }
 
@@ -77,12 +78,14 @@ namespace AutoBuildSql
                 };
                 List<Filter> listDataBase = new List<Filter> { f, f1, f2, f3 };
 
-
+                Filter t = new Filter { Name = "code_info" };
+                List<Filter> listTable = new List<Filter> { t };
                 listAppConfig = new List<AppConfig>();
                 AppConfig ac = new AppConfig
                 {
                     ConnectionAttrs = listConn,
-                    FilterDatabases = listDataBase
+                    FilterDatabases = listDataBase,
+                    FilterTables = listTable
                 };
                 listAppConfig.Add(ac);
                 XmlHelper.SaveConfig(listAppConfig, "AppConfig.xml"); 
@@ -91,6 +94,7 @@ namespace AutoBuildSql
             ConnectionAttr = listAppConfig[0].ConnectionAttrs;
             Conn = listAppConfig[0].ConnectionAttrs[0].ConnectionStr;
             FilterDatabases = listAppConfig[0].FilterDatabases;
+            FilterTables = listAppConfig[0].FilterTables;
         }
 
         // 用于缓存参数的HASH表

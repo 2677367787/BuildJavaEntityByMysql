@@ -88,6 +88,12 @@ namespace AutoBuildSql
                     var tableNames = tables.Trim().Split(' ');
                     string tableAbbName = tableNames[0];
                     string tableName = tableAbbName;//string.Format("`{0}`.`{1}`", dataBaseName, tableAbbName);
+
+                    if (MySqlHelper.FilterTables.Where(t => t.Name == tableAbbName).ToList().Any())
+                    {
+                        continue;
+                    }
+
                     string tableSchemaName = string.Format("`{0}`.`{1}`", dataBaseName, tableAbbName);
                     string tableFullName = tableNames[0];
                     if (tableNames.Length > 1)
@@ -131,6 +137,7 @@ namespace AutoBuildSql
                             string dataType = colDr[0]["data_type"].ToString().ToLower();
                             string colLength = colDr[0]["COLUMN_TYPE"].ToString().ToLower();
                             string id="";
+                            string original = dr[key].ToString();
                             switch (dataType)
                             {
                                 case "int":
@@ -149,17 +156,16 @@ namespace AutoBuildSql
                                         int valueLenght = unCode.Length;
                                         if (valueLenght + 4 > dataLength)
                                         {
-                                            id = "Test" +
-                                                     unCode.Substring(0, dataLength - (valueLenght + 4 - dataLength));
+                                            id = "TEST" + Utils.GetRandomString(dataLength - (valueLenght + 4 - dataLength));
                                         }
                                         else
                                         {
-                                            id = unCode;
+                                            id = "TEST"+unCode;
                                         }
                                     }
                                     break;
                                 default:
-                                    id = "";
+                                    id = dr[key].ToString();
                                     break;
                             }
 
@@ -170,11 +176,10 @@ namespace AutoBuildSql
                             //循环所有关联列赋值
                             foreach (TableRelt ftb in ftbList)
                             {
-                                foreach (DataRow fdr in ds.Tables[ftb.PtbName].Rows)
+                                foreach (DataRow fdr in ds.Tables[ftb.PtbName].Select(""+ftb.PcolName + "='" + original+"'"))
                                 {
                                     fdr[ftb.PcolName] = id;
                                 }
-                                ListTableRelt.Remove(ftb);
                             }
 
                             //查找此ID作为外键的表条件在右
@@ -182,11 +187,10 @@ namespace AutoBuildSql
                             //循环所有关联列赋值
                             foreach (TableRelt ptb in ptbList)
                             {
-                                foreach (DataRow fdr in ds.Tables[ptb.FtbName].Rows)
+                                foreach (DataRow fdr in ds.Tables[ptb.FtbName].Select("" + ptb.FcolName + "='" + original + "'"))
                                 {
                                     fdr[ptb.FcolName] = id;
                                 }
-                                ListTableRelt.Remove(ptb);
                             }
                         }
                         i++;
@@ -325,7 +329,11 @@ namespace AutoBuildSql
 
             for (int j = 0; j < dt.Rows.Count; j++)
             {
-                sqlText.Append("VALUES(");
+                if (j == 0)
+                {
+                    sqlText.Append("VALUES");
+                }
+                sqlText.Append("(");
                 for (int i = 0; i < dt.Columns.Count; i++)
                 {
                     string value = "null";
