@@ -19,10 +19,18 @@ namespace AutoBuildSql
 {
     public class DataHelper
     {
-        public static DataTable GetDataBases()
+        public static Dictionary<object, object> GetDataBases()
         {
             string sqlText = "SHOW DATABASES";
-            return MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
+            string filterTable = "";
+            foreach (var filter in MySqlHelper.FilterDatabases)
+            {
+                filterTable += "'"+ filter.Name + "',";
+            }
+            filterTable = string.Format("DATABASE not in({0})", filterTable.TrimEnd(','));
+            return MySqlHelper.GetDataSetBySqlText(sqlText)
+                .Tables[0].Select(filterTable).ToDictionary(k=>k["DATABASE"] , k=> k["DATABASE"]);
+              
         }
 
         public static DataTable GetAllColumn()

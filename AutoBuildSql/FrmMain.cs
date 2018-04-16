@@ -21,13 +21,13 @@ namespace AutoBuildSql
         private void cboConnName_SelectedIndexChanged(object sender, EventArgs e)
         {
             MySqlHelper.Conn = cboConnName.SelectedValue.ToString();
-            cboDataBase.DataSource = DataHelper.GetDataBases();
-        }
+            Utils.BinderComboBox(cboDataBase,DataHelper.GetDataBases());
+        } 
 
         private void btnResolve_Click(object sender, EventArgs e)
         {
             Dictionary<string, IList<string>> sqlList = SqlTextHelper.Analysis(txtSqlText.Text,
-                cboDataBase.SelectedValue.ToString());
+                cboDataBase.SelectedValue.ToString(), chkIsOnly.Checked);
 
             if (chkAdd.Checked)
             {

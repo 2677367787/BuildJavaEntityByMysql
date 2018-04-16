@@ -21,9 +21,10 @@ namespace AutoBuildSql
         {
             string sqlText = txtSqlText.Text.Replace("\r\n", " ").ToLower();
             sqlText = Regex.Replace(sqlText, "\\s{2,}", " ");
-            if (txtSqlText.Text.IndexOf("insert into", StringComparison.Ordinal) != -1)
+            if (sqlText.IndexOf("insert into", StringComparison.Ordinal) != -1)
             {
-
+                sqlText = sqlText.Replace("insert into", "");
+               string tableName = sqlText.Substring(0, sqlText.IndexOf("(", StringComparison.Ordinal));
             }
             int top = 15;    //顶部起点像素位置
             int left = 15;   //左边起点像素位置 
@@ -83,6 +84,11 @@ namespace AutoBuildSql
 //                form.Controls.Add(tb);
 //            }
 //            form.Height = top + 180;
+        }
+
+        private void btnResolve_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

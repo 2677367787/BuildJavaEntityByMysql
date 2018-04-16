@@ -40,6 +40,8 @@
             this.chkDel = new System.Windows.Forms.CheckBox();
             this.chkUpd = new System.Windows.Forms.CheckBox();
             this.txtLog = new System.Windows.Forms.TextBox();
+            this.chkIsOnly = new System.Windows.Forms.CheckBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnResolve
@@ -48,7 +50,7 @@
             this.btnResolve.Name = "btnResolve";
             this.btnResolve.Size = new System.Drawing.Size(75, 23);
             this.btnResolve.TabIndex = 1;
-            this.btnResolve.Text = "解析";
+            this.btnResolve.Text = "生成SQL语句";
             this.btnResolve.UseVisualStyleBackColor = true;
             this.btnResolve.Click += new System.EventHandler(this.btnResolve_Click);
             // 
@@ -99,7 +101,7 @@
             this.txtResult.Multiline = true;
             this.txtResult.Name = "txtResult";
             this.txtResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtResult.Size = new System.Drawing.Size(749, 226);
+            this.txtResult.Size = new System.Drawing.Size(749, 159);
             this.txtResult.TabIndex = 7;
             this.txtResult.WordWrap = false;
             this.txtResult.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSqlText_KeyPress);
@@ -148,19 +150,40 @@
             // 
             // txtLog
             // 
-            this.txtLog.Location = new System.Drawing.Point(12, 496);
+            this.txtLog.Location = new System.Drawing.Point(12, 444);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(749, 158);
+            this.txtLog.Size = new System.Drawing.Size(749, 104);
             this.txtLog.TabIndex = 13;
             this.txtLog.WordWrap = false;
+            // 
+            // chkIsOnly
+            // 
+            this.chkIsOnly.AutoSize = true;
+            this.chkIsOnly.Location = new System.Drawing.Point(16, 239);
+            this.chkIsOnly.Name = "chkIsOnly";
+            this.chkIsOnly.Size = new System.Drawing.Size(156, 16);
+            this.chkIsOnly.TabIndex = 14;
+            this.chkIsOnly.Text = "以数据生成新的副本数据";
+            this.chkIsOnly.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(15, 428);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(53, 12);
+            this.label3.TabIndex = 15;
+            this.label3.Text = "执行日志";
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(773, 661);
+            this.ClientSize = new System.Drawing.Size(773, 559);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.chkIsOnly);
             this.Controls.Add(this.txtLog);
             this.Controls.Add(this.chkUpd);
             this.Controls.Add(this.chkDel);
@@ -193,6 +216,8 @@
         private System.Windows.Forms.CheckBox chkDel;
         private System.Windows.Forms.CheckBox chkUpd;
         private System.Windows.Forms.TextBox txtLog;
+        private System.Windows.Forms.CheckBox chkIsOnly;
+        private System.Windows.Forms.Label label3;
     }
 }
 

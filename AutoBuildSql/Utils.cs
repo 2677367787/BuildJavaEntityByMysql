@@ -39,6 +39,15 @@ namespace AutoBuildSql
             return GetRandomString(length, true, true, false, false, "");
         }
 
+        public static void BinderComboBox(ComboBox cb, IDictionary<object, object> dic)
+        {
+            BindingSource bs = new BindingSource();
+            bs.DataSource = dic;
+            cb.DataSource = bs;
+            cb.DisplayMember = "Value";
+            cb.ValueMember = "Key";
+        }
+
         #region 5.0 生成随机字符串
         ///<summary>
         ///生成随机字符串 

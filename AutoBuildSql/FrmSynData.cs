@@ -25,14 +25,15 @@ namespace AutoBuildSql
 
         private void cboConnSource_SelectedIndexChanged(object sender, EventArgs e)
         {
-            MySqlHelper.Conn = cboConnSource.SelectedValue.ToString();
-            cboDbSource.DataSource = DataHelper.GetDataBases();
+            MySqlHelper.Conn = cboConnSource.SelectedValue.ToString(); 
+            Utils.BinderComboBox(cboDbSource, DataHelper.GetDataBases());
+
         }
 
         private void cboConnTarger_SelectedIndexChanged(object sender, EventArgs e)
         {
             MySqlHelper.Conn = cboConnSource.SelectedValue.ToString();
-            cboDbTarger.DataSource = DataHelper.GetDataBases();
+            Utils.BinderComboBox(cboDbTarger, DataHelper.GetDataBases());
         }
 
         private void btnSynData_Click(object sender, EventArgs e)
@@ -40,7 +41,7 @@ namespace AutoBuildSql
             string sourceDb = cboDbSource.SelectedValue.ToString();
             string targerDb = cboDbTarger.SelectedValue.ToString();
             Dictionary<string, IList<string>> sqlList = SqlTextHelper.Analysis(txtSqlText.Text,
-                cboDbSource.SelectedValue.ToString());
+                cboDbSource.SelectedValue.ToString(),false);
             txtResult.Text += string.Join("\r\n", sqlList["del"].ToArray()).Replace(sourceDb, targerDb);
             txtResult.Text += string.Join("\r\n", sqlList["add"].ToArray()).Replace(sourceDb, targerDb); ;
             try

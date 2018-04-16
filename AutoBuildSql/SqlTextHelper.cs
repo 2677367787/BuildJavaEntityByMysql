@@ -30,7 +30,7 @@ namespace AutoBuildSql
         /// 主表和关联表字段关联关系
         /// </summary>
         private static readonly IList<TableRelt> ListTableRelt = new List<TableRelt>();
-        public static Dictionary<string, IList<string>> Analysis(string originalSqlText,string dataBaseName)
+        public static Dictionary<string, IList<string>> Analysis(string originalSqlText,string dataBaseName,bool isOnly)
         {
             DictTbNameRelt.Clear();
             ListTableRelt.Clear();
@@ -50,8 +50,23 @@ namespace AutoBuildSql
                 sqlText = Regex.Replace(sqlText, "\\s{2,}", " ");
                 int formIndex = sqlText.IndexOf(" from ", StringComparison.Ordinal);
                 int whereIndex = sqlText.IndexOf(" where ", StringComparison.Ordinal);
-                string tableAndRelation = sqlText.Substring(formIndex + 6, whereIndex - formIndex);
-                string conditonsStr = sqlText.Substring(whereIndex + 7); 
+
+                #region 字段截取
+                string fieldStr = sqlText.Substring(0, formIndex);
+                fieldStr = fieldStr.Substring(6, fieldStr.Length - 6);
+                #endregion
+                string tableAndRelation = "";
+                if (whereIndex == -1) { 
+                    whereIndex = sqlText.Length;
+                    tableAndRelation = sqlText.Substring(formIndex + 6);
+                }
+                else
+                {
+                    tableAndRelation = sqlText.Substring(formIndex + 6, whereIndex - formIndex);
+                    whereIndex = whereIndex + 7;
+                }
+                 
+                string conditonsStr = sqlText.Substring(whereIndex); 
 
                 //要执行查询的SQL语句
                 string excutSql = sqlText.Substring(formIndex);
@@ -76,6 +91,36 @@ namespace AutoBuildSql
                     LocalData.Logs.AppendLine("解析后表名：" + tableName);
                     //excutSql = excutSql.Replace(tableAbbName, tableName);
                 }
+                #region 解析字段
+
+                IList<string> listField = new List<string>();
+                string[] fields = fieldStr.Split(',');
+                foreach (var field in fields)
+                {
+                    string tempField = field.Trim();
+                    string[] asSplit = tempField.Split(new[] { "as" }, StringSplitOptions.None);
+                    if (asSplit.Length != 2)
+                    {
+                        asSplit = tempField.Split(' ');
+                    }
+
+                    string tabAndField = tempField;
+                    if (asSplit.Length == 2)
+                    {
+                        tabAndField = asSplit[0];
+                    }
+
+                    string[] tabAndFields = tabAndField.Split('.');
+                    if (DictTbNameRelt.ContainsKey(tabAndFields[0]))
+                    {
+                        listField.Add(DictTbNameRelt[tabAndFields[0]] + "." + tabAndFields[1]);
+                    }
+                    else
+                    {
+                        MessageBox.Show("字段" + asSplit[0] + "有误,找不到源表");
+                    }
+                }
+                #endregion
                 foreach (var con in condList)
                 {
                     ResolveCond(con);
@@ -109,91 +154,101 @@ namespace AutoBuildSql
                     ds.Tables.Add(dt.Copy());
                 }
 
-                DataTable dtColumnInfo = DataHelper.GetAllColumn();
-                Dictionary<string, Dictionary<string, string>> tbAndKeyCol =
-                    new Dictionary<string, Dictionary<string, string>>();
-                //遍历所有表,查找每个表的主键,根据主键类型生成新主键，然后修改关联的外键表
-                foreach (DataTable dt in ds.Tables)
+                if (isOnly)
                 {
-                    int i = 0;
-                    string tbName = dt.TableName;
-                    Dictionary<string, string> keyCol = new Dictionary<string, string>();
-                    IList<string> listKeys = DataHelper.GetKey(tbName, dataBaseName);
-                    tbAndKeyCol.Add(tbName, keyCol);
-                    foreach (DataRow dr in dt.Rows)
+                    DataTable dtColumnInfo = DataHelper.GetAllColumn();
+                    Dictionary<string, Dictionary<string, string>> tbAndKeyCol =
+                        new Dictionary<string, Dictionary<string, string>>();
+                    //遍历所有表,查找每个表的主键,根据主键类型生成新主键，然后修改关联的外键表
+                    foreach (DataTable dt in ds.Tables)
                     {
-                        foreach (var key in listKeys)
+                        int i = 0;
+                        string tbName = dt.TableName;
+                        Dictionary<string, string> keyCol = new Dictionary<string, string>();
+                        IList<string> listKeys = DataHelper.GetKey(tbName, dataBaseName);
+                        tbAndKeyCol.Add(tbName, keyCol);
+                        foreach (DataRow dr in dt.Rows)
                         {
-                            if (i == 0)
+                            foreach (var key in listKeys)
                             {
-                                keyCol.Add(key, key);
-                            }
-                            
-                            //查找所有主键
-                            DataRow[] colDr = dtColumnInfo.Select(
-                                string.Format("TABLE_SCHEMA='{0}' AND COLUMN_NAME='{1}' and TABLE_NAME='{2}'",
-                                    dataBaseName,
-                                    key, tbName));
-                            string dataType = colDr[0]["data_type"].ToString().ToLower();
-                            string colLength = colDr[0]["COLUMN_TYPE"].ToString().ToLower();
-                            string id="";
-                            string original = dr[key].ToString();
-                            switch (dataType)
-                            {
-                                case "int":
-                                    id = DataHelper.GetIntKey(tbName, key);
-                                    break;
-                                case "varchar":
-                                    string unCode = dr[key].ToString();
-                                    if (unCode.IndexOf("-", StringComparison.Ordinal) != -1 && unCode.Length >= 20)
-                                    {
-                                        id = Guid.NewGuid().ToString();
-                                        //unCode＝unCode;
-                                    }
-                                    else
-                                    {
-                                        int dataLength = int.Parse(DataHelper.GetRegexValue(colLength));
-                                        int valueLenght = unCode.Length;
-                                        if (valueLenght + 4 > dataLength)
+                                if (i == 0)
+                                {
+                                    keyCol.Add(key, key);
+                                }
+
+                                //查找所有主键
+                                DataRow[] colDr = dtColumnInfo.Select(
+                                    string.Format("TABLE_SCHEMA='{0}' AND COLUMN_NAME='{1}' and TABLE_NAME='{2}'",
+                                        dataBaseName,
+                                        key, tbName));
+                                string dataType = colDr[0]["data_type"].ToString().ToLower();
+                                string colLength = colDr[0]["COLUMN_TYPE"].ToString().ToLower();
+                                string id = "";
+                                string original = dr[key].ToString();
+                                switch (dataType)
+                                {
+                                    case "int":
+                                        id = DataHelper.GetIntKey(tbName, key);
+                                        break;
+                                    case "varchar":
+                                        string unCode = dr[key].ToString();
+                                        if (unCode.IndexOf("-", StringComparison.Ordinal) != -1 && unCode.Length >= 20)
                                         {
-                                            id = "TEST" + Utils.GetRandomString(dataLength - (valueLenght + 4 - dataLength));
+                                            id = Guid.NewGuid().ToString();
+                                            //unCode＝unCode;
                                         }
                                         else
                                         {
-                                            id = "TEST"+unCode;
+                                            int dataLength = int.Parse(DataHelper.GetRegexValue(colLength));
+                                            int valueLenght = unCode.Length;
+                                            if (valueLenght + 4 > dataLength)
+                                            {
+                                                id = "TEST" +
+                                                     Utils.GetRandomString(dataLength - (valueLenght + 4 - dataLength));
+                                            }
+                                            else
+                                            {
+                                                id = "TEST" + unCode;
+                                            }
                                         }
+                                        break;
+                                    default:
+                                        id = dr[key].ToString();
+                                        break;
+                                }
+
+                                dr[key] = id;
+
+                                //查找此ID作为外键的表条件在左
+                                List<TableRelt> ftbList =
+                                    ListTableRelt.Where(t => t.FtbName == tbName && t.FcolName == key).ToList();
+                                //循环所有关联列赋值
+                                foreach (TableRelt ftb in ftbList)
+                                {
+                                    foreach (
+                                        DataRow fdr in
+                                            ds.Tables[ftb.PtbName].Select("" + ftb.PcolName + "='" + original + "'"))
+                                    {
+                                        fdr[ftb.PcolName] = id;
                                     }
-                                    break;
-                                default:
-                                    id = dr[key].ToString();
-                                    break;
-                            }
+                                }
 
-                            dr[key] = id;
-
-                            //查找此ID作为外键的表条件在左
-                            List<TableRelt> ftbList= ListTableRelt.Where(t => t.FtbName == tbName && t.FcolName == key).ToList();
-                            //循环所有关联列赋值
-                            foreach (TableRelt ftb in ftbList)
-                            {
-                                foreach (DataRow fdr in ds.Tables[ftb.PtbName].Select(""+ftb.PcolName + "='" + original+"'"))
+                                //查找此ID作为外键的表条件在右
+                                List<TableRelt> ptbList =
+                                    ListTableRelt.Where(t => t.PtbName == tbName && t.PcolName == key).ToList();
+                                //循环所有关联列赋值
+                                foreach (TableRelt ptb in ptbList)
                                 {
-                                    fdr[ftb.PcolName] = id;
+                                    foreach (
+                                        DataRow fdr in
+                                            ds.Tables[ptb.FtbName].Select("" + ptb.FcolName + "='" + original + "'"))
+                                    {
+                                        fdr[ptb.FcolName] = id;
+                                    }
                                 }
                             }
-
-                            //查找此ID作为外键的表条件在右
-                            List<TableRelt> ptbList = ListTableRelt.Where(t => t.PtbName == tbName && t.PcolName == key).ToList();
-                            //循环所有关联列赋值
-                            foreach (TableRelt ptb in ptbList)
-                            {
-                                foreach (DataRow fdr in ds.Tables[ptb.FtbName].Select("" + ptb.FcolName + "='" + original + "'"))
-                                {
-                                    fdr[ptb.FcolName] = id;
-                                }
-                            }
+                            i++;
                         }
-                        i++;
                     }
                 }
 
@@ -279,7 +334,15 @@ namespace AutoBuildSql
             string[] conditons = conditonsStr.Split(new[] { " and " }, StringSplitOptions.None);
             foreach (var conditon in conditons)
             {
+                if(string.IsNullOrEmpty(conditon))
+                    continue;
                 string[] cond = conditon.Split(new[] { "=" }, StringSplitOptions.None);
+                if (cond.Length < 2)
+                {
+                    MessageBox.Show("条件语句" + conditon + "解析有误!");
+                    continue;
+                }
+                
                 string leftCond = cond[0].Trim();
                 string rightCond = cond[1].Trim();
                 //排除固定值 int类型
@@ -421,8 +484,9 @@ namespace AutoBuildSql
                         sqlText.AppendFormat(" and {0}='{1}'", key, row[key]);
                     }
                 }
+                sqlText.Append(";");
             }
-            sqlText.Append(";");
+            
             return sqlText.ToString();
         }
     }

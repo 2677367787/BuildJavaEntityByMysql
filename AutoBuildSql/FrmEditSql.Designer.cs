@@ -56,9 +56,11 @@
             this.btnResolve.TabIndex = 3;
             this.btnResolve.Text = "解析";
             this.btnResolve.UseVisualStyleBackColor = true;
+            this.btnResolve.Click += new System.EventHandler(this.btnResolve_Click);
             // 
             // panel1
             // 
+            this.panel1.AutoScroll = true;
             this.panel1.Location = new System.Drawing.Point(398, 49);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(445, 497);

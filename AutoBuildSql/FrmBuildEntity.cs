@@ -139,8 +139,8 @@ namespace AutoBuildSql
 
         private void cboConnName_SelectedIndexChanged(object sender, EventArgs e)
         {
-            MySqlHelper.Conn = cboConnName.SelectedValue.ToString();
-            cboDataBase.DataSource = DataHelper.GetDataBases();
+            MySqlHelper.Conn = cboConnName.SelectedValue.ToString(); 
+            Utils.BinderComboBox(cboDataBase, DataHelper.GetDataBases());
         }
     }
 }
