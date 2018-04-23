@@ -57,6 +57,8 @@
     <Compile Include="AppConfig.cs" />
     <Compile Include="ColumnInfo.cs" />
     <Compile Include="DataHelper.cs" />
+    <Compile Include="Dto\AnalysisData.cs" />
+    <Compile Include="Dto\JavaMapping.cs" />
     <Compile Include="FrmEditSql.cs">
       <SubType>Form</SubType>
     </Compile>

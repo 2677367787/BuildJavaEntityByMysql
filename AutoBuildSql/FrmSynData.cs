@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using AutoBuildSql.Dto;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace AutoBuildSql
@@ -40,8 +41,11 @@ namespace AutoBuildSql
         {
             string sourceDb = cboDbSource.SelectedValue.ToString();
             string targerDb = cboDbTarger.SelectedValue.ToString();
-            Dictionary<string, IList<string>> sqlList = SqlTextHelper.Analysis(txtSqlText.Text,
-                cboDbSource.SelectedValue.ToString(),false);
+
+            AnalysisData ai = SqlTextHelper.Analysis(txtSqlText.Text,
+                cboDbSource.SelectedValue.ToString(), false);
+            IDictionary<string, IList<string>> sqlList = ai.SqlText;
+             
             txtResult.Text += string.Join("\r\n", sqlList["del"].ToArray()).Replace(sourceDb, targerDb);
             txtResult.Text += string.Join("\r\n", sqlList["add"].ToArray()).Replace(sourceDb, targerDb); ;
             try

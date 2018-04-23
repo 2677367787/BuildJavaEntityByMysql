@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+using AutoBuildSql.Dto;
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace AutoBuildSql
@@ -26,8 +28,8 @@ namespace AutoBuildSql
 
         private void btnResolve_Click(object sender, EventArgs e)
         {
-            Dictionary<string, IList<string>> sqlList = SqlTextHelper.Analysis(txtSqlText.Text,
-                cboDataBase.SelectedValue.ToString(), chkIsOnly.Checked);
+            AnalysisData ai  = SqlTextHelper.Analysis(txtSqlText.Text,cboDataBase.SelectedValue.ToString(), chkIsOnly.Checked);
+            IDictionary<string, IList<string>> sqlList = ai.SqlText;
 
             if (chkAdd.Checked)
             {
@@ -43,6 +45,13 @@ namespace AutoBuildSql
             }
 
             txtLog.Text = LocalData.Logs.ToString();
+            txtResult.Text += "解析得到的字段：\r\n";
+
+            //json 字符串
+            IDictionary<string, string> aliasField = ai.AliasField;
+            IDictionary<string, string> fieldAndTable = ai.FieldAndTable;
+            txtResult.Text += aliasField.ToString();
+            txtResult.Text += fieldAndTable.ToString();
         }
 
         private void txtSqlText_KeyPress(object sender, KeyPressEventArgs e)
@@ -52,6 +61,17 @@ namespace AutoBuildSql
                 ((TextBox)sender).SelectAll();
                 e.Handled = true;
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+            JavaMapping jm = new JavaMapping();
+            jm.SqlType = "varchar";
+            jm.JavaType = "String";
+            IList<JavaMapping> list = new List<JavaMapping>();
+            list.Add(jm);
+            XmlHelper.SaveConfig(list, "JavaMapping.xml");
         }
     }
 }

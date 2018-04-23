@@ -16,6 +16,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml.Xsl;
+using AutoBuildSql.Dto;
 
 namespace AutoBuildSql
 {
@@ -30,13 +31,13 @@ namespace AutoBuildSql
         /// 主表和关联表字段关联关系
         /// </summary>
         private static readonly IList<TableRelt> ListTableRelt = new List<TableRelt>();
-        public static Dictionary<string, IList<string>> Analysis(string originalSqlText,string dataBaseName,bool isOnly)
+        public static AnalysisData Analysis(string originalSqlText,string dataBaseName,bool isOnly)
         {
             DictTbNameRelt.Clear();
             ListTableRelt.Clear();
             LocalData.Logs.Clear();
 
-            Dictionary<string, IList<string>> dictSqlText = new Dictionary<string, IList<string>>();
+            IDictionary<string, IList<string>> dictSqlText = new Dictionary<string, IList<string>>();
             IList<string> listAdd = new List<string>();
             IList<string> listDel = new List<string>();
             IList<string> listUpd = new List<string>();
@@ -44,6 +45,7 @@ namespace AutoBuildSql
             dictSqlText.Add("del", listDel);
             dictSqlText.Add("upd", listUpd);
 
+            AnalysisData ai = new AnalysisData {SqlText = dictSqlText};
             try
             {
                 string sqlText = originalSqlText.Replace("\r\n", " ").Replace("`","").ToLower();
@@ -55,7 +57,8 @@ namespace AutoBuildSql
                 string fieldStr = sqlText.Substring(0, formIndex);
                 fieldStr = fieldStr.Substring(6, fieldStr.Length - 6);
                 #endregion
-                string tableAndRelation = "";
+
+                string tableAndRelation;
                 if (whereIndex == -1) { 
                     whereIndex = sqlText.Length;
                     tableAndRelation = sqlText.Substring(formIndex + 6);
@@ -74,7 +77,7 @@ namespace AutoBuildSql
                 IList<string> condList = new List<string>();
                 //去除关键字
                 IList<string> list = RemoveKeyWord(tableAndRelation, excutSql, condList);
-                
+                IList<string> listTab = new List<string>();
                 foreach (var tables in list)
                 {
                     var tableNames = tables.Trim().Split(' ');
@@ -90,15 +93,18 @@ namespace AutoBuildSql
                     string tableName = string.Format("`{0}`.`{1}`", dataBaseName, tableAbbName);
                     LocalData.Logs.AppendLine("解析后表名：" + tableName);
                     //excutSql = excutSql.Replace(tableAbbName, tableName);
+                    listTab.Add(tableName);
                 }
+                ai.Tables = listTab;
                 #region 解析字段
 
-                IList<string> listField = new List<string>();
+                IDictionary<string,string> dictField = new Dictionary<string, string>();
+                IDictionary<string, string> dictAliasField = new Dictionary<string, string>();
                 string[] fields = fieldStr.Split(',');
                 foreach (var field in fields)
                 {
                     string tempField = field.Trim();
-                    string[] asSplit = tempField.Split(new[] { "as" }, StringSplitOptions.None);
+                    string[] asSplit = tempField.Split(new[] { " as " }, StringSplitOptions.None);
                     if (asSplit.Length != 2)
                     {
                         asSplit = tempField.Split(' ');
@@ -113,13 +119,20 @@ namespace AutoBuildSql
                     string[] tabAndFields = tabAndField.Split('.');
                     if (DictTbNameRelt.ContainsKey(tabAndFields[0]))
                     {
-                        listField.Add(DictTbNameRelt[tabAndFields[0]] + "." + tabAndFields[1]);
+                        dictField.Add(tabAndFields[1], DictTbNameRelt[tabAndFields[0]]);
+                        if (asSplit.Length == 2)
+                        {
+                            dictAliasField.Add(asSplit[1], DictTbNameRelt[tabAndFields[0]]);
+                        }
                     }
                     else
                     {
                         MessageBox.Show("字段" + asSplit[0] + "有误,找不到源表");
                     }
                 }
+                ai.FieldAndTable = dictField;
+                ai.AliasField = dictAliasField;
+
                 #endregion
                 foreach (var con in condList)
                 {
@@ -274,7 +287,7 @@ namespace AutoBuildSql
             {
                 LocalData.Logs.Append("出现异常："+ex.Message);
             }
-            return dictSqlText;
+            return ai;
         } 
 
         private static IList<string> RemoveKeyWord(string strSql, string excutSql, IList<string> condList)

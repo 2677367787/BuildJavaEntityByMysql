@@ -46,6 +46,7 @@
             // 
             // btnResolve
             // 
+            this.btnResolve.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnResolve.Location = new System.Drawing.Point(686, 235);
             this.btnResolve.Name = "btnResolve";
             this.btnResolve.Size = new System.Drawing.Size(75, 23);
@@ -56,6 +57,8 @@
             // 
             // txtSqlText
             // 
+            this.txtSqlText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSqlText.Location = new System.Drawing.Point(16, 43);
             this.txtSqlText.Multiline = true;
             this.txtSqlText.Name = "txtSqlText";
@@ -97,6 +100,8 @@
             // 
             // txtResult
             // 
+            this.txtResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtResult.Location = new System.Drawing.Point(12, 264);
             this.txtResult.Multiline = true;
             this.txtResult.Name = "txtResult";
@@ -120,6 +125,7 @@
             // 
             // chkAdd
             // 
+            this.chkAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkAdd.AutoSize = true;
             this.chkAdd.Location = new System.Drawing.Point(396, 239);
             this.chkAdd.Name = "chkAdd";
@@ -130,6 +136,7 @@
             // 
             // chkDel
             // 
+            this.chkDel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkDel.AutoSize = true;
             this.chkDel.Location = new System.Drawing.Point(496, 239);
             this.chkDel.Name = "chkDel";
@@ -140,6 +147,7 @@
             // 
             // chkUpd
             // 
+            this.chkUpd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkUpd.AutoSize = true;
             this.chkUpd.Location = new System.Drawing.Point(596, 239);
             this.chkUpd.Name = "chkUpd";
@@ -150,6 +158,9 @@
             // 
             // txtLog
             // 
+            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLog.Location = new System.Drawing.Point(12, 444);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
@@ -160,6 +171,8 @@
             // 
             // chkIsOnly
             // 
+            this.chkIsOnly.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.chkIsOnly.AutoSize = true;
             this.chkIsOnly.Location = new System.Drawing.Point(16, 239);
             this.chkIsOnly.Name = "chkIsOnly";
@@ -170,6 +183,9 @@
             // 
             // label3
             // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(15, 428);
             this.label3.Name = "label3";
@@ -181,7 +197,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(773, 559);
+            this.ClientSize = new System.Drawing.Size(769, 559);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.chkIsOnly);
             this.Controls.Add(this.txtLog);
