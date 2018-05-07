@@ -42,11 +42,13 @@
             this.txtLog = new System.Windows.Forms.TextBox();
             this.chkIsOnly = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // btnResolve
             // 
-            this.btnResolve.Location = new System.Drawing.Point(686, 235);
+            this.btnResolve.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnResolve.Location = new System.Drawing.Point(742, 235);
             this.btnResolve.Name = "btnResolve";
             this.btnResolve.Size = new System.Drawing.Size(75, 23);
             this.btnResolve.TabIndex = 1;
@@ -56,11 +58,13 @@
             // 
             // txtSqlText
             // 
+            this.txtSqlText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtSqlText.Location = new System.Drawing.Point(16, 43);
             this.txtSqlText.Multiline = true;
             this.txtSqlText.Name = "txtSqlText";
             this.txtSqlText.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtSqlText.Size = new System.Drawing.Size(745, 186);
+            this.txtSqlText.Size = new System.Drawing.Size(801, 186);
             this.txtSqlText.TabIndex = 2;
             this.txtSqlText.Text = resources.GetString("txtSqlText.Text");
             this.txtSqlText.WordWrap = false;
@@ -85,6 +89,7 @@
             this.cboDataBase.Size = new System.Drawing.Size(302, 20);
             this.cboDataBase.TabIndex = 3;
             this.cboDataBase.ValueMember = "database";
+            this.cboDataBase.SelectedIndexChanged += new System.EventHandler(this.cboDataBase_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -97,11 +102,13 @@
             // 
             // txtResult
             // 
+            this.txtResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtResult.Location = new System.Drawing.Point(12, 264);
             this.txtResult.Multiline = true;
             this.txtResult.Name = "txtResult";
             this.txtResult.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtResult.Size = new System.Drawing.Size(749, 159);
+            this.txtResult.Size = new System.Drawing.Size(805, 159);
             this.txtResult.TabIndex = 7;
             this.txtResult.WordWrap = false;
             this.txtResult.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtSqlText_KeyPress);
@@ -120,8 +127,9 @@
             // 
             // chkAdd
             // 
+            this.chkAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkAdd.AutoSize = true;
-            this.chkAdd.Location = new System.Drawing.Point(396, 239);
+            this.chkAdd.Location = new System.Drawing.Point(452, 239);
             this.chkAdd.Name = "chkAdd";
             this.chkAdd.Size = new System.Drawing.Size(72, 16);
             this.chkAdd.TabIndex = 10;
@@ -130,8 +138,9 @@
             // 
             // chkDel
             // 
+            this.chkDel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkDel.AutoSize = true;
-            this.chkDel.Location = new System.Drawing.Point(496, 239);
+            this.chkDel.Location = new System.Drawing.Point(552, 239);
             this.chkDel.Name = "chkDel";
             this.chkDel.Size = new System.Drawing.Size(72, 16);
             this.chkDel.TabIndex = 11;
@@ -140,8 +149,9 @@
             // 
             // chkUpd
             // 
+            this.chkUpd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkUpd.AutoSize = true;
-            this.chkUpd.Location = new System.Drawing.Point(596, 239);
+            this.chkUpd.Location = new System.Drawing.Point(652, 239);
             this.chkUpd.Name = "chkUpd";
             this.chkUpd.Size = new System.Drawing.Size(72, 16);
             this.chkUpd.TabIndex = 12;
@@ -150,16 +160,21 @@
             // 
             // txtLog
             // 
+            this.txtLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLog.Location = new System.Drawing.Point(12, 444);
             this.txtLog.Multiline = true;
             this.txtLog.Name = "txtLog";
             this.txtLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtLog.Size = new System.Drawing.Size(749, 104);
+            this.txtLog.Size = new System.Drawing.Size(805, 104);
             this.txtLog.TabIndex = 13;
             this.txtLog.WordWrap = false;
             // 
             // chkIsOnly
             // 
+            this.chkIsOnly.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.chkIsOnly.AutoSize = true;
             this.chkIsOnly.Location = new System.Drawing.Point(16, 239);
             this.chkIsOnly.Name = "chkIsOnly";
@@ -170,6 +185,9 @@
             // 
             // label3
             // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(15, 428);
             this.label3.Name = "label3";
@@ -177,11 +195,19 @@
             this.label3.TabIndex = 15;
             this.label3.Text = "执行日志";
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(279, 235);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 21);
+            this.textBox1.TabIndex = 16;
+            // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(773, 559);
+            this.ClientSize = new System.Drawing.Size(825, 559);
+            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.chkIsOnly);
             this.Controls.Add(this.txtLog);
@@ -218,6 +244,7 @@
         private System.Windows.Forms.TextBox txtLog;
         private System.Windows.Forms.CheckBox chkIsOnly;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 

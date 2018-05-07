@@ -8,8 +8,10 @@
 ** 修改记录： 
 *****************************************************/
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using AutoBuildSql.Dto;
 
 namespace AutoBuildSql
 {
@@ -17,30 +19,39 @@ namespace AutoBuildSql
     {　
         public static string GenerateSql(Dictionary<string,ColumnInfo> fields,string entityName,string type)
         {
-            Dictionary<string, string> dictTypeMapping = new Dictionary<string, string>
+            Dictionary<string, string> dictTypeMapping;
+            if (File.Exists("JavaMapping.xml"))
             {
-                {"varchar", "String"},
-                {"char", "String"},
-                {"blob", "byte[]"},
-                {"text", "String"},
-                {"integer", "Long"},
-                {"tinyint", "Integer"},
-                {"smallint", "Integer"},
-                {"mediumint", "Integer"},
-                {"bit", "Boolean"},
-                {"bigint", "BigInteger"},
-                {"float", "Float"},
-                {"double", "Double"},
-                {"decimal", "BigDecimal"},
-                {"boolean", "Integer"},
-                {"id", "Long"},
-                {"date", "Date"},
-                {"time", "Time"},
-                {"datetime", "Timestamp"},
-                {"timestamp", "Timestamp"},
-                {"year", "Date"},
-                {"int", "Integer"}
-            };
+                IList<JavaMapping> javaMapping = XmlHelper.ReadConfig<JavaMapping>("JavaMapping.xml");
+                dictTypeMapping = javaMapping.ToDictionary(t => t.SqlType, t => t.JavaType);
+            }
+            else
+            {
+                dictTypeMapping = new Dictionary<string, string>
+                {
+                    {"varchar", "String"},
+                    {"char", "String"},
+                    {"blob", "byte[]"},
+                    {"text", "String"},
+                    {"integer", "Long"},
+                    {"tinyint", "Integer"},
+                    {"smallint", "Integer"},
+                    {"mediumint", "Integer"},
+                    {"bit", "Boolean"},
+                    {"bigint", "BigInteger"},
+                    {"float", "Float"},
+                    {"double", "Double"},
+                    {"decimal", "BigDecimal"},
+                    {"boolean", "Integer"},
+                    {"id", "Long"},
+                    {"date", "Date"},
+                    {"time", "Time"},
+                    {"datetime", "Timestamp"},
+                    {"timestamp", "Timestamp"},
+                    {"year", "Date"},
+                    {"int", "Integer"}
+                };
+            }
             StringBuilder entity = new StringBuilder();
             entity.Append("");
             string wrap = "\r\n";
@@ -53,6 +64,10 @@ namespace AutoBuildSql
             int i = 1;
             foreach (var field in fields)
             {
+                if (!dictTypeMapping.ContainsKey(field.Value.DataType))
+                {
+                    entity.Append(field.Value.DataType + "没有配置映射，请打开javamapping.xml文件配置映射");
+                }
                 string dataType = dictTypeMapping[field.Value.DataType];
                 string fieldName = GetField(field.Value.Name);
                 string comment = field.Value.Comment;

@@ -11,11 +11,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Xml.Xsl;
+using AutoBuildSql.Dto;
 
 namespace AutoBuildSql
 {
@@ -30,13 +32,13 @@ namespace AutoBuildSql
         /// 主表和关联表字段关联关系
         /// </summary>
         private static readonly IList<TableRelt> ListTableRelt = new List<TableRelt>();
-        public static Dictionary<string, IList<string>> Analysis(string originalSqlText,string dataBaseName,bool isOnly)
+        public static AnalysisData Analysis(string originalSqlText,string dataBaseName,bool isOnly,List<string> filterField)
         {
             DictTbNameRelt.Clear();
             ListTableRelt.Clear();
             LocalData.Logs.Clear();
-
-            Dictionary<string, IList<string>> dictSqlText = new Dictionary<string, IList<string>>();
+            IDictionary<string, string> conditionValue = new Dictionary<string, string>();
+            IDictionary<string, IList<string>> dictSqlText = new Dictionary<string, IList<string>>();
             IList<string> listAdd = new List<string>();
             IList<string> listDel = new List<string>();
             IList<string> listUpd = new List<string>();
@@ -44,25 +46,31 @@ namespace AutoBuildSql
             dictSqlText.Add("del", listDel);
             dictSqlText.Add("upd", listUpd);
 
+            AnalysisData ai = new AnalysisData {SqlText = dictSqlText};
             try
             {
-                string sqlText = originalSqlText.Replace("\r\n", " ").Replace("`","").ToLower();
+                int orgFormIndex = originalSqlText.IndexOf("\r\nFROM\r\n", StringComparison.Ordinal);
+                string sqlText = originalSqlText.Replace("\r\n", " ").Replace("`","");
                 sqlText = Regex.Replace(sqlText, "\\s{2,}", " ");
-                int formIndex = sqlText.IndexOf(" from ", StringComparison.Ordinal);
-                int whereIndex = sqlText.IndexOf(" where ", StringComparison.Ordinal);
+                int formIndex = sqlText.IndexOf(" FROM ", StringComparison.Ordinal);
+                int whereIndex = sqlText.IndexOf(" WHERE ", StringComparison.Ordinal);
 
                 #region 字段截取
-                string fieldStr = sqlText.Substring(0, formIndex);
-                fieldStr = fieldStr.Substring(6, fieldStr.Length - 6);
+                string fieldStr = originalSqlText.Substring(6, orgFormIndex - 6);
+                //fieldStr = fieldStr.Substring(6, fieldStr.Length - 6);
+                Regex r = new Regex("--.*?\\r\\n", RegexOptions.IgnoreCase);
+                fieldStr = r.Replace(fieldStr, "");
+                fieldStr = fieldStr.Replace("\r\n", " ").Replace("`", ""); 
                 #endregion
-                string tableAndRelation = "";
+
+                string tableAndRelation;
                 if (whereIndex == -1) { 
                     whereIndex = sqlText.Length;
                     tableAndRelation = sqlText.Substring(formIndex + 6);
                 }
                 else
                 {
-                    tableAndRelation = sqlText.Substring(formIndex + 6, whereIndex - formIndex);
+                    tableAndRelation = sqlText.Substring(formIndex + 6, whereIndex - formIndex-7);
                     whereIndex = whereIndex + 7;
                 }
                  
@@ -71,10 +79,11 @@ namespace AutoBuildSql
                 //要执行查询的SQL语句
                 string excutSql = sqlText.Substring(formIndex);
 
+                //存储条件语句 A.X = B.X 形式
                 IList<string> condList = new List<string>();
                 //去除关键字
-                IList<string> list = RemoveKeyWord(tableAndRelation, excutSql, condList);
-                
+                IList<string> list = RemoveKeyWord(tableAndRelation, condList);
+                IList<string> listTab = new List<string>(); 
                 foreach (var tables in list)
                 {
                     var tableNames = tables.Trim().Split(' ');
@@ -86,19 +95,21 @@ namespace AutoBuildSql
                     {
                         DictTbNameRelt.Add(tableNames[0], tableNames[0]);
                     }
-                    string tableAbbName = tableNames[0];
-                    string tableName = string.Format("`{0}`.`{1}`", dataBaseName, tableAbbName);
+                    string tableName = string.Format("`{0}`.`{1}`", dataBaseName, tableNames[0]);
+                    
                     LocalData.Logs.AppendLine("解析后表名：" + tableName);
-                    //excutSql = excutSql.Replace(tableAbbName, tableName);
+                    listTab.Add(tableName);
                 }
+                ai.Tables = listTab;
                 #region 解析字段
 
-                IList<string> listField = new List<string>();
+                IDictionary<string,string> dictField = new Dictionary<string, string>();
+                IDictionary<string, string> dictAliasField = new Dictionary<string, string>();
                 string[] fields = fieldStr.Split(',');
                 foreach (var field in fields)
                 {
                     string tempField = field.Trim();
-                    string[] asSplit = tempField.Split(new[] { "as" }, StringSplitOptions.None);
+                    string[] asSplit = tempField.Split(new[] { " AS " }, StringSplitOptions.None);
                     if (asSplit.Length != 2)
                     {
                         asSplit = tempField.Split(' ');
@@ -113,13 +124,22 @@ namespace AutoBuildSql
                     string[] tabAndFields = tabAndField.Split('.');
                     if (DictTbNameRelt.ContainsKey(tabAndFields[0]))
                     {
-                        listField.Add(DictTbNameRelt[tabAndFields[0]] + "." + tabAndFields[1]);
+                        dictField.Add(tabAndFields[1], DictTbNameRelt[tabAndFields[0]]);
+                        LocalData.Logs.AppendLine("解析得到字段---- " + tabAndFields[1]);
+                        if (asSplit.Length == 2)
+                        {
+                            dictAliasField.Add(asSplit[1], DictTbNameRelt[tabAndFields[0]]);
+                            LocalData.Logs.AppendLine("别名---- " + asSplit[1]);
+                        }
                     }
                     else
                     {
-                        MessageBox.Show("字段" + asSplit[0] + "有误,找不到源表");
+                        LocalData.Logs.AppendLine("字段[ " + asSplit[0] + " ]解析错误");
                     }
                 }
+                ai.FieldAndTable = dictField;
+                ai.AliasField = dictAliasField;
+
                 #endregion
                 foreach (var con in condList)
                 {
@@ -127,6 +147,7 @@ namespace AutoBuildSql
                 }
                 ResolveCond(conditonsStr);
 
+                Dictionary<string, string> dictTabs = new Dictionary<string, string>();
                 DataSet ds = new DataSet();
                 foreach (var tables in list)
                 {
@@ -134,28 +155,47 @@ namespace AutoBuildSql
                     string tableAbbName = tableNames[0];
                     string tableName = tableAbbName;//string.Format("`{0}`.`{1}`", dataBaseName, tableAbbName);
 
+                    if (dictTabs.ContainsKey(tableAbbName))
+                    {
+                        continue; 
+                    }
+                    dictTabs.Add(tableAbbName, tableAbbName);
                     if (MySqlHelper.FilterTables.Where(t => t.Name == tableAbbName).ToList().Any())
                     {
                         continue;
-                    }
+                    } 
 
-                    string tableSchemaName = string.Format("`{0}`.`{1}`", dataBaseName, tableAbbName);
-                    string tableFullName = tableNames[0];
                     if (tableNames.Length > 1)
                     {
                         tableAbbName = tableNames[1];
                     }
+                    
 
                     //查询数据要去重
                     string sql = string.Format("select DISTINCT {0}.* {1}", tableAbbName, excutSql);
                     LocalData.Logs.AppendLine("执行SQL：" + sql);
                     DataTable dt = MySqlHelper.GetDataSetBySqlText(sql).Tables[0];
+                    LocalData.Logs.AppendLine("SQL执行结果: " + dt.Rows.Count);
                     dt.TableName = tableName;
                     ds.Tables.Add(dt.Copy());
                 }
 
                 if (isOnly)
                 {
+//                    for (int i = 0; i < filterField.Count; i++)
+//                    {
+//                        List<TableRelt> ftbList = ListTableRelt.Where(t => t.FcolName == filterField[i]).ToList();
+//                        if (ftbList.Count > 0)
+//                        {
+//                            filterField.Remove(filterField[i]);
+//                        }
+//                        //查找此ID作为外键的表条件在右
+//                        List<TableRelt> ptbList = ListTableRelt.Where(t => t.PcolName == filterField[i]).ToList();
+//                        if (ptbList.Count > 0)
+//                        {
+//                            filterField.Remove(filterField[i]);
+//                        }
+//                    }
                     DataTable dtColumnInfo = DataHelper.GetAllColumn();
                     Dictionary<string, Dictionary<string, string>> tbAndKeyCol =
                         new Dictionary<string, Dictionary<string, string>>();
@@ -165,87 +205,46 @@ namespace AutoBuildSql
                         int i = 0;
                         string tbName = dt.TableName;
                         Dictionary<string, string> keyCol = new Dictionary<string, string>();
+
+                        //查找表中所有主键
                         IList<string> listKeys = DataHelper.GetKey(tbName, dataBaseName);
                         tbAndKeyCol.Add(tbName, keyCol);
                         foreach (DataRow dr in dt.Rows)
                         {
+                            foreach (var field in filterField)
+                            {
+                                if (!listKeys.Contains(field) && dt.Columns.Contains(field))
+                                {
+                                    string original = dr[field].ToString();
+                                    string uniqueStr = GetUniqueStr(dtColumnInfo, dataBaseName, field, tbName, original);
+                                    dr[field] = uniqueStr;
+                                    if ("2016-02-29" == uniqueStr)
+                                    {
+                                        DateTime startTime =
+                                            TimeZone.CurrentTimeZone.ToLocalTime(new DateTime(2016, 2, 29)); // 当地时区
+                                        double timeStamp = (DateTime.Now - startTime).TotalMilliseconds; // 相差毫秒数
+                                        conditionValue.Add(field, timeStamp.ToString(CultureInfo.InvariantCulture));
+                                    }
+                                    else
+                                    {
+                                        conditionValue.Add(field, uniqueStr);
+                                    }
+
+                                    MoidfyRelation(ds, tbName, field, original, uniqueStr);
+                                }
+                            }
                             foreach (var key in listKeys)
                             {
                                 if (i == 0)
                                 {
                                     keyCol.Add(key, key);
                                 }
-
-                                //查找所有主键
-                                DataRow[] colDr = dtColumnInfo.Select(
-                                    string.Format("TABLE_SCHEMA='{0}' AND COLUMN_NAME='{1}' and TABLE_NAME='{2}'",
-                                        dataBaseName,
-                                        key, tbName));
-                                string dataType = colDr[0]["data_type"].ToString().ToLower();
-                                string colLength = colDr[0]["COLUMN_TYPE"].ToString().ToLower();
-                                string id = "";
+                                
                                 string original = dr[key].ToString();
-                                switch (dataType)
-                                {
-                                    case "int":
-                                        id = DataHelper.GetIntKey(tbName, key);
-                                        break;
-                                    case "varchar":
-                                        string unCode = dr[key].ToString();
-                                        if (unCode.IndexOf("-", StringComparison.Ordinal) != -1 && unCode.Length >= 20)
-                                        {
-                                            id = Guid.NewGuid().ToString();
-                                            //unCode＝unCode;
-                                        }
-                                        else
-                                        {
-                                            int dataLength = int.Parse(DataHelper.GetRegexValue(colLength));
-                                            int valueLenght = unCode.Length;
-                                            if (valueLenght + 4 > dataLength)
-                                            {
-                                                id = "TEST" +
-                                                     Utils.GetRandomString(dataLength - (valueLenght + 4 - dataLength));
-                                            }
-                                            else
-                                            {
-                                                id = "TEST" + unCode;
-                                            }
-                                        }
-                                        break;
-                                    default:
-                                        id = dr[key].ToString();
-                                        break;
-                                }
-
+                                string id = GetUniqueStr(dtColumnInfo, dataBaseName, key, tbName, original);
                                 dr[key] = id;
 
-                                //查找此ID作为外键的表条件在左
-                                List<TableRelt> ftbList =
-                                    ListTableRelt.Where(t => t.FtbName == tbName && t.FcolName == key).ToList();
-                                //循环所有关联列赋值
-                                foreach (TableRelt ftb in ftbList)
-                                {
-                                    foreach (
-                                        DataRow fdr in
-                                            ds.Tables[ftb.PtbName].Select("" + ftb.PcolName + "='" + original + "'"))
-                                    {
-                                        fdr[ftb.PcolName] = id;
-                                    }
-                                }
-
-                                //查找此ID作为外键的表条件在右
-                                List<TableRelt> ptbList =
-                                    ListTableRelt.Where(t => t.PtbName == tbName && t.PcolName == key).ToList();
-                                //循环所有关联列赋值
-                                foreach (TableRelt ptb in ptbList)
-                                {
-                                    foreach (
-                                        DataRow fdr in
-                                            ds.Tables[ptb.FtbName].Select("" + ptb.FcolName + "='" + original + "'"))
-                                    {
-                                        fdr[ptb.FcolName] = id;
-                                    }
-                                }
+                                MoidfyRelation(ds, tbName, key, original, id);
                             }
                             i++;
                         }
@@ -274,23 +273,130 @@ namespace AutoBuildSql
             {
                 LocalData.Logs.Append("出现异常："+ex.Message);
             }
-            return dictSqlText;
-        } 
+            ai.ConditionValue = conditionValue;
+            return ai;
+        }
 
-        private static IList<string> RemoveKeyWord(string strSql, string excutSql, IList<string> condList)
+        private static void MoidfyRelation(DataSet ds,string tbName,string key,string original,string uniqueStr)
+        {
+            //查找和此字段关联的表  条件在左 ,同步更改
+            List<TableRelt> ftbList =
+                ListTableRelt.Where(t => t.FtbName == tbName && t.FcolName == key).ToList();
+            //循环所有关联列赋值
+            foreach (TableRelt ftb in ftbList)
+            {
+                foreach (
+                    DataRow fdr in
+                        ds.Tables[ftb.PtbName].Select("" + ftb.PcolName + "='" + original + "'"))
+                {
+                    fdr[ftb.PcolName] = uniqueStr;
+                }
+            }
+
+            //查找和此字段关联的表  条件在右 ,同步更改
+            List<TableRelt> ptbList =
+                ListTableRelt.Where(t => t.PtbName == tbName && t.PcolName == key).ToList();
+            //循环所有关联列赋值
+            foreach (TableRelt ptb in ptbList)
+            {
+                foreach (
+                    DataRow fdr in
+                        ds.Tables[ptb.FtbName].Select("" + ptb.FcolName + "='" + original + "'"))
+                {
+                    fdr[ptb.FcolName] = uniqueStr;
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dtColumnInfo">所有解析出的表字段信息</param>
+        /// <param name="dataBaseName">数据库名称</param>
+        /// <param name="columnName">列名称</param>
+        /// <param name="tbName"></param>
+        /// <returns>0 dataType 1 colLength</returns>
+        private static string[] GetTypeAndLength(DataTable dtColumnInfo,string dataBaseName,string columnName,string tbName)
+        {
+            //查找所有主键
+            DataRow[] colDr = dtColumnInfo.Select(
+                string.Format("TABLE_SCHEMA='{0}' AND COLUMN_NAME='{1}' and TABLE_NAME='{2}'",
+                    dataBaseName, columnName, tbName));
+            if (colDr.Length == 0)
+            {
+                LocalData.ErrLogs.AppendLine("没有在数据库"+ dataBaseName + "." + tbName + "中找到列：" + columnName);
+                return new[] { "", "" };
+            }
+            string dataType = colDr[0]["data_type"].ToString().ToLower();
+            string colLength = colDr[0]["COLUMN_TYPE"].ToString().ToLower();
+            return new[] {dataType, colLength};
+        }
+
+        private static string GetUniqueStr(DataTable dtColumnInfo, string dataBaseName, string key, string tbName,string original)
+        {
+            string id;
+            string[] typeLenght = GetTypeAndLength(dtColumnInfo, dataBaseName, key, tbName);
+            string dataType = typeLenght[0];
+            string colLength = typeLenght[1];
+            //根据主键类型,生成新的唯一数据
+            switch (dataType)
+            {
+                case "int":
+                    id = DataHelper.GetIntKey(tbName, key);
+                    break;
+                case "varchar":
+                    string unCode = original;
+                    if (unCode.IndexOf("-", StringComparison.Ordinal) != -1 && unCode.Length >= 20)
+                    {
+                        id = Guid.NewGuid().ToString();
+                    }
+                    else
+                    {
+                        int dataLength = int.Parse(DataHelper.GetRegexValue(colLength));
+                        int valueLenght = unCode.Length;
+                        if (valueLenght + 4 > dataLength)
+                        {
+                            id = "TEST" +
+                                 Utils.GetRandomString(dataLength - (valueLenght + 4 - dataLength));
+                        }
+                        else
+                        {
+                            id = "TEST" + unCode;
+                        }
+                    }
+                    break;
+                case "date":
+                case "datetime":
+                    id = "2016-02-29";
+                    break;
+                default:
+                    id = original;
+                    break;
+            }
+            return id;
+        }
+
+        /// <summary>
+        /// 去除数据库关键字
+        /// </summary>
+        /// <param name="strSql"></param>
+        /// <param name="condList"></param>
+        /// <returns></returns>
+        private static IList<string> RemoveKeyWord(string strSql,IList<string> condList)
         {
             IList<string> list = new List<string>();
             list.Add(strSql);
             string[] keyWrods =
             {
-                "left outer join",
-                "right outer join",
-                "inner outer join",
-                "inner join",
-                "left join",
-                "right join",
-                " join ",
-                " on "
+                "LEFT OUTER JOIN",
+                "RIGHT OUTER JOIN",
+                "INNER OUTER JOIN",
+                "INNER JOIN",
+                "LEFT JOIN",
+                "RIGHT JOIN",
+                " JOIN ",
+                " ON ",
+                " WHERE "
             }; 
             foreach (string keyWrod in keyWrods)
             {
@@ -308,17 +414,25 @@ namespace AutoBuildSql
             foreach (string sqls in list)
             {
                 string[] sql = sqls.Split(new[] { keyWrod }, StringSplitOptions.None);
-                if (keyWrod == " on ")
+                //条件
+                if (keyWrod == " ON ")
                 {
                     list2.Add(sql[0]);
-                    if(sql.Length == 2)
+                    if (sql.Length == 2)
+                    {
                         condList.Add(sql[1]);
+                    }
                 }
                 else
                 {
+                    //
                     foreach (string s in sql)
                     {
-                        list2.Add(s);
+                        //去掉重复表
+                        if (!list2.Contains(s))
+                        {
+                            list2.Add(s);
+                        }
                     }
                 }
             }
@@ -331,7 +445,7 @@ namespace AutoBuildSql
         /// <param name="conditonsStr"></param>
         private static void ResolveCond(string conditonsStr)
         {
-            string[] conditons = conditonsStr.Split(new[] { " and " }, StringSplitOptions.None);
+            string[] conditons = conditonsStr.Split(new[] { " AND " }, StringSplitOptions.None);
             foreach (var conditon in conditons)
             {
                 if(string.IsNullOrEmpty(conditon))
@@ -339,7 +453,7 @@ namespace AutoBuildSql
                 string[] cond = conditon.Split(new[] { "=" }, StringSplitOptions.None);
                 if (cond.Length < 2)
                 {
-                    MessageBox.Show("条件语句" + conditon + "解析有误!");
+                    LocalData.Logs.AppendLine("条件语句" + conditon + "解析有误!");
                     continue;
                 }
                 
@@ -367,7 +481,7 @@ namespace AutoBuildSql
                 }
                 else
                 {
-                    MessageBox.Show("条件语句" + conditon + "解析有误!");
+                    LocalData.Logs.AppendLine("条件语句" + conditon + "解析有误!");
                 }
             }
         }

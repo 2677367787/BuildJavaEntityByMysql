@@ -17,6 +17,7 @@ namespace AutoBuildSql
     public class LocalData
     {
         public static StringBuilder Logs = new StringBuilder();
+        public static StringBuilder ErrLogs = new StringBuilder();
     }
 
     public class TableRelt

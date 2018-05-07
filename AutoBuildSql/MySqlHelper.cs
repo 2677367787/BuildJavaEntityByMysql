@@ -50,13 +50,7 @@ namespace AutoBuildSql
                         "Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true",
                     Name = "开发库"
                 };
-                ConnectionAttr ca2 = new ConnectionAttr
-                {
-                    ConnectionStr =
-                        "Database='szdpyou';Data Source='localhost';User Id='root';Password='root';charset='utf8';pooling=true",
-                    Name = "开发库"
-                };
-                List<ConnectionAttr> listConn = new List<ConnectionAttr> { ca, ca1, ca2 };
+                List<ConnectionAttr> listConn = new List<ConnectionAttr> { ca, ca1};
 
 
                 Filter f = new Filter

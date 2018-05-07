@@ -9,6 +9,7 @@
 *****************************************************/
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -31,7 +32,7 @@ namespace AutoBuildSql
 
         public static bool IsNumeric(string value)
         {
-            return Regex.IsMatch(value, @"^[+-]?/d*[.]?/d*$");
+            return Regex.IsMatch(value, @"^-?[1-9]\d*\.?\d*|-?0\.\d*[1-9]\d*$");
         }
 
         public static string GetRandomString(int length)
@@ -76,5 +77,50 @@ namespace AutoBuildSql
             return s;
         }
         #endregion
+
+        private static IList<int> GetStrIndex(string str)
+        {
+            IList<int> list = new List<int>();
+            char[] strChar = str.ToCharArray();
+            for (int i = 0; i < strChar.Length; i++)
+            {
+                if (strChar[i] > 'A' && strChar[i] < 'Z')
+                {
+                    list.Add(i);
+                }
+            }
+            return list;
+        }
+
+        public static string ConvertToSqlFiledRule(string str)
+        {
+            IList<int> indexs = GetStrIndex(str);
+            IList<string> result = new List<string>();
+            char[] strChar = str.ToCharArray();
+            for (int i = 0; i < strChar.Length; i++)
+            {
+                if (indexs.Contains(i))
+                {
+                    result.Add("_" + strChar[i].ToString().ToLower());
+                }
+                else
+                {
+                    result.Add(strChar[i].ToString());
+                }
+            }
+            return string.Join("", result);
+        }
+
+        public static string GetFieldSource(DataTable dt,string field,string tables)
+        {
+            string where = string.Format("COLUMN_NAME='{0}' and TABLE_NAME in('{1}'))", field, tables);
+            DataRow[] dr = dt.Select(where);
+            return dr[0][""].ToString();
+        }
+
+        public static string GetFieldValue(DataSet ds, string tabName, string field)
+        {
+            return ds.Tables[tabName].Rows[0][field].ToString();
+        }
     }
 }

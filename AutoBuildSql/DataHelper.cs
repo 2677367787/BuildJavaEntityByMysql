@@ -33,10 +33,28 @@ namespace AutoBuildSql
               
         }
 
+        /// <summary>
+        /// 查询所有列
+        /// </summary>
+        /// <returns></returns>
         public static DataTable GetAllColumn()
         {
+            string filterDataBases = "";
+            foreach (var filter in MySqlHelper.FilterDatabases)
+            {
+                filterDataBases += "'" + filter.Name + "',";
+            }
+            filterDataBases = filterDataBases.TrimEnd(',');
+
+            string filterTables = "";
+            foreach (var filter in MySqlHelper.FilterTables)
+            {
+                filterTables += "'" + filter.Name + "',";
+            }
+            filterTables = filterTables.TrimEnd(',');
+
             string sqlText = "SELECT f.`TABLE_SCHEMA`,f.data_type,f.`TABLE_NAME`,f.`COLUMN_NAME`,f.`COLUMN_TYPE`,f.`COLUMN_COMMENT` FROM INFORMATION_SCHEMA.Columns f " +
-                             " where table_schema NOT IN('information_schema','mysql','performance_schema','test')";
+                             " where table_schema NOT IN(" + filterDataBases + ") and TABLE_NAME not in(" + filterTables + ")";
             return MySqlHelper.GetDataSetBySqlText(sqlText).Tables[0];
         }
 
