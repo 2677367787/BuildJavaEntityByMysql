@@ -23,3 +23,6 @@ D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.Frm
 D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\bin\Debug\MySql.Data.dll
 D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\bin\Debug\WeifenLuo.WinFormsUI.Docking.dll
 D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.FrmEditSql.resources
+D:\CSDN\BuildJavaEntityByMysql\AutoBuildSql\bin\Debug\AutoBuildSql.exe.config
+D:\CSDN\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.exe
+D:\CSDN\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.pdb
