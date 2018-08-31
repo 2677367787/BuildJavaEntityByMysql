@@ -8,16 +8,16 @@
 ** 修改记录： 
 *****************************************************/
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using System.Xml.Xsl;
 using AutoBuildSql.Dto;
+using AutoBuildSql.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace AutoBuildSql
 {
@@ -42,9 +42,11 @@ namespace AutoBuildSql
             IList<string> listAdd = new List<string>();
             IList<string> listDel = new List<string>();
             IList<string> listUpd = new List<string>();
+            IList<string> listJson = new List<string>();
             dictSqlText.Add("add", listAdd);
             dictSqlText.Add("del", listDel);
             dictSqlText.Add("upd", listUpd);
+            dictSqlText.Add("json", listJson);
 
             AnalysisData ai = new AnalysisData {SqlText = dictSqlText};
             try
@@ -70,7 +72,7 @@ namespace AutoBuildSql
                 }
                 else
                 {
-                    tableAndRelation = sqlText.Substring(formIndex + 6, whereIndex - formIndex-7);
+                    tableAndRelation = sqlText.Substring(formIndex + 6, whereIndex - formIndex-6);
                     whereIndex = whereIndex + 7;
                 }
                  
@@ -107,20 +109,24 @@ namespace AutoBuildSql
                 IDictionary<string, string> dictAliasField = new Dictionary<string, string>();
                 string[] fields = fieldStr.Split(',');
                 foreach (var field in fields)
-                {
+                {   
+                    // 循环字段是否有使用AS关键字设置别名
                     string tempField = field.Trim();
                     string[] asSplit = tempField.Split(new[] { " AS " }, StringSplitOptions.None);
                     if (asSplit.Length != 2)
                     {
+                        // 没有AS别名 检查有没有使用空格隔开的别名
                         asSplit = tempField.Split(' ');
                     }
 
                     string tabAndField = tempField;
+                    // 如果有别名,不管是AS还是空格设置的别名
                     if (asSplit.Length == 2)
                     {
+                        // 不管别名取，实际字段
                         tabAndField = asSplit[0];
                     }
-
+                    // 用.切割,分析字段是否带有表别名,不带别名会出错
                     string[] tabAndFields = tabAndField.Split('.');
                     if (DictTbNameRelt.ContainsKey(tabAndFields[0]))
                     {
@@ -141,6 +147,7 @@ namespace AutoBuildSql
                 ai.AliasField = dictAliasField;
 
                 #endregion
+
                 foreach (var con in condList)
                 {
                     ResolveCond(con);
@@ -253,6 +260,10 @@ namespace AutoBuildSql
 
                 foreach (DataTable dt in ds.Tables)
                 {
+                    IsoDateTimeConverter dtConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd HH:mm:ss" };
+                    string jsonStr = JsonConvert.SerializeObject(dt, new UnixDateTimeConverter());
+                    listJson.Add(jsonStr);
+
                     string tbName = dt.TableName;
                     DataTable dtColmnInfo = DataHelper.GetColumnByTableName(tbName);
 
@@ -517,8 +528,14 @@ namespace AutoBuildSql
                     if (!string.IsNullOrEmpty(dt.Rows[j][i].ToString()))
                     {
                         value = dt.Rows[j][i].ToString();
+                        sqlText.AppendFormat("'{0}',", value);
                     }
-                    sqlText.AppendFormat("'{0}',", value);
+                    else
+                    {
+                        // null不需要引号引起来
+                        sqlText.AppendFormat("{0},", value);
+                    }
+                   
                 }
                 sqlText.Remove(sqlText.Length - 1, 1);
                 sqlText.Append("),");

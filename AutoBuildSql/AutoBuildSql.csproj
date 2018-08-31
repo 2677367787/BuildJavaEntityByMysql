@@ -37,6 +37,10 @@
     <Reference Include="MySql.Data">
       <HintPath>CommonDll\MySql.Data.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>CommonDll\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
@@ -96,6 +100,7 @@
       <DependentUpon>FrmSynData.cs</DependentUpon>
     </Compile>
     <Compile Include="Generate.cs" />
+    <Compile Include="Json\UnixDateTimeConverter.cs" />
     <Compile Include="LocalData.cs" />
     <Compile Include="MySqlHelper.cs" />
     <Compile Include="Program.cs" />

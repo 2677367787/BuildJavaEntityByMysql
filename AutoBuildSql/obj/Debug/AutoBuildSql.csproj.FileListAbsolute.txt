@@ -26,3 +26,5 @@ D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.Frm
 D:\CSDN\BuildJavaEntityByMysql\AutoBuildSql\bin\Debug\AutoBuildSql.exe.config
 D:\CSDN\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.exe
 D:\CSDN\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.pdb
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\obj\Debug\AutoBuildSql.csprojResolveAssemblyReference.cache
+D:\System develop\BuildJavaEntityByMysql\AutoBuildSql\bin\Debug\Newtonsoft.Json.dll

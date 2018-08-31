@@ -43,6 +43,7 @@
             this.chkIsOnly = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
+            this.chkJson = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnResolve
@@ -197,16 +198,28 @@
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(279, 235);
+            this.textBox1.Location = new System.Drawing.Point(178, 234);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 21);
             this.textBox1.TabIndex = 16;
+            // 
+            // chkJson
+            // 
+            this.chkJson.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkJson.AutoSize = true;
+            this.chkJson.Location = new System.Drawing.Point(351, 239);
+            this.chkJson.Name = "chkJson";
+            this.chkJson.Size = new System.Drawing.Size(84, 16);
+            this.chkJson.TabIndex = 17;
+            this.chkJson.Text = "Json字符串";
+            this.chkJson.UseVisualStyleBackColor = true;
             // 
             // FrmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(825, 559);
+            this.Controls.Add(this.chkJson);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.chkIsOnly);
@@ -245,6 +258,7 @@
         private System.Windows.Forms.CheckBox chkIsOnly;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.CheckBox chkJson;
     }
 }
 

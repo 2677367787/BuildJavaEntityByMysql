@@ -50,6 +50,12 @@ namespace AutoBuildSql
                 txtResult.Text += "\r\n";
             }
 
+            if (chkJson.Checked)
+            {
+                txtResult.Text += string.Join("\r\n", sqlList["json"].ToArray());
+                txtResult.Text += "\r\n";
+            }
+
             txtLog.Text = LocalData.Logs.ToString(); 
  
             if (!string.IsNullOrEmpty(LocalData.ErrLogs.ToString()))
